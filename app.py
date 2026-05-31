@@ -77,7 +77,7 @@ st.markdown("""
 </style>
 """, unsafe_allow_html=True)
 
-# ================== Translation Dictionary (shortened for brevity – keep full from previous version) ==================
+# ================== Translation Dictionary (full) ==================
 LANGUAGES = {
     "English": {
         "app_title": "⚡ Circuit Diagnostics & Hardware Re‑engineering",
@@ -124,7 +124,141 @@ LANGUAGES = {
         "website_link": "https://globalinternetsitepy-abh7v6tnmskxxnuplrdcgk.streamlit.app/",
         "lang_code": "English"
     },
-    # ... include other languages similarly (French, Spanish, Creole) from previous version
+    "French": {
+        "app_title": "⚡ Diagnostic de Circuits & Réingénierie Matérielle",
+        "credit": "conçu par Gesner Deslandes",
+        "caption": "Téléchargez une photo d'une carte électronique défectueuse, connectez la sonde USB, et laissez l'IA diagnostiquer les pannes + vous aider à construire un nouveau matériel à partir des puces récupérables.",
+        "sidebar_instructions": "**Instructions**\n1. Connectez votre sonde USB (Arduino ou tout appareil envoyant du JSON sur le port série).\n2. Sélectionnez le bon port COM ci-dessous et cliquez sur Connecter.\n3. Votre sonde DOIT envoyer des lignes comme : {\"chip\":\"U1\",\"voltage\":3.3}\n4. Téléchargez une photo du circuit.\n5. Lancez le diagnostic.",
+        "usb_title": "🔌 Sonde USB",
+        "select_port": "Sélectionnez le port USB",
+        "connect_btn": "Connecter",
+        "disconnect_btn": "Déconnecter",
+        "connected_success": "Connecté à {}",
+        "failed_connect": "Échec de la connexion",
+        "disconnected": "Déconnecté",
+        "last_reading": "Dernière lecture : {}",
+        "image_upload": "📸 Téléchargement de l'image du circuit",
+        "upload_label": "Prenez une photo du circuit défectueux",
+        "analyze_btn": "🔍 Analyser l'image avec l'IA",
+        "analyzing": "Analyse de l'image (Groq Vision)...",
+        "analysis_complete": "Analyse terminée",
+        "probe_readings_title": "📊 Lectures de la sonde (USB)",
+        "clear_readings_btn": "Effacer les lectures",
+        "no_data": "Pas encore de données. Assurez-vous que votre sonde envoie des lignes JSON.",
+        "diagnostic_btn": "🚀 Exécuter le diagnostic complet (Image + Sonde)",
+        "upload_first": "Veuillez d'abord télécharger une image.",
+        "running_diag": "Diagnostic IA en cours...",
+        "diag_complete": "Diagnostic terminé.",
+        "diagnostic_report": "🩺 Rapport de diagnostic",
+        "device_type": "Type d'appareil",
+        "probe_data_status": "Mesures réelles de la sonde utilisées",
+        "probe_data_yes": "✅ Oui – {} mesures ont été reçues de la sonde USB.",
+        "probe_data_no": "⚠️ Aucune donnée réelle de la sonde n'a été reçue. Le diagnostic est une simulation basée uniquement sur l'image. Vérifiez votre connexion USB et assurez-vous que la sonde envoie des lignes JSON.",
+        "fault_summary": "Résumé des pannes",
+        "actions": "Actions",
+        "recommended_tools": "Outils recommandés",
+        "build_title": "🤖 Construire un nouveau matériel à partir de cette carte",
+        "build_desc": "Demandez à l'IA de reconcevoir les puces récupérables en un tout nouvel appareil.",
+        "chat_placeholder": "Décrivez ce que vous voulez construire",
+        "designing": "Conception du nouveau matériel...",
+        "footer": "🔧 Construit avec Streamlit + Groq AI + USB Serial.",
+        "sidebar_contact": "📞 Contact",
+        "phone": "📱 (509)-47385663",
+        "email": "✉️ deslandes78@gmail.com",
+        "website": "🌐 GlobalInternet.py",
+        "website_link": "https://globalinternetsitepy-abh7v6tnmskxxnuplrdcgk.streamlit.app/",
+        "lang_code": "French"
+    },
+    "Spanish": {
+        "app_title": "⚡ Diagnóstico de Circuitos & Reingeniería de Hardware",
+        "credit": "construido por Gesner Deslandes",
+        "caption": "Sube una foto de una placa de circuito rota, conecta la sonda USB y deja que la IA diagnostique fallos + te ayude a construir un nuevo hardware a partir de los chips recuperables.",
+        "sidebar_instructions": "**Instrucciones**\n1. Conecte su sonda USB (Arduino o cualquier dispositivo que envíe JSON por Serial).\n2. Seleccione el puerto COM correcto abajo y haga clic en Conectar.\n3. Su sonda DEBE enviar líneas como: {\"chip\":\"U1\",\"voltage\":3.3}\n4. Suba una foto del circuito.\n5. Ejecute el diagnóstico.",
+        "usb_title": "🔌 Sonda USB",
+        "select_port": "Seleccione el puerto USB",
+        "connect_btn": "Conectar",
+        "disconnect_btn": "Desconectar",
+        "connected_success": "Conectado a {}",
+        "failed_connect": "Error de conexión",
+        "disconnected": "Desconectado",
+        "last_reading": "Última lectura: {}",
+        "image_upload": "📸 Subir imagen del circuito",
+        "upload_label": "Tome una foto del circuito defectuoso",
+        "analyze_btn": "🔍 Analizar imagen con IA",
+        "analyzing": "Analizando imagen (Groq Vision)...",
+        "analysis_complete": "Análisis completo",
+        "probe_readings_title": "📊 Lecturas de la sonda (USB)",
+        "clear_readings_btn": "Borrar lecturas",
+        "no_data": "Aún no hay datos. Asegúrese de que su sonda esté enviando líneas JSON.",
+        "diagnostic_btn": "🚀 Ejecutar diagnóstico completo (Imagen + Sonda)",
+        "upload_first": "Primero suba una imagen.",
+        "running_diag": "Ejecutando diagnóstico IA...",
+        "diag_complete": "Diagnóstico completado.",
+        "diagnostic_report": "🩺 Informe de diagnóstico",
+        "device_type": "Tipo de dispositivo",
+        "probe_data_status": "Mediciones reales de la sonda utilizadas",
+        "probe_data_yes": "✅ Sí – se recibieron {} mediciones de la sonda USB.",
+        "probe_data_no": "⚠️ No se recibieron datos reales de la sonda. El diagnóstico es una simulación basada solo en la imagen. Verifique su conexión USB y asegúrese de que la sonda envíe líneas JSON.",
+        "fault_summary": "Resumen de fallos",
+        "actions": "Acciones",
+        "recommended_tools": "Herramientas recomendadas",
+        "build_title": "🤖 Construir nuevo hardware desde esta placa",
+        "build_desc": "Pida a la IA que rediseñe los chips recuperables en un dispositivo completamente nuevo.",
+        "chat_placeholder": "Describa lo que quiere construir",
+        "designing": "Diseñando su nuevo hardware...",
+        "footer": "🔧 Construido con Streamlit + Groq AI + USB Serial.",
+        "sidebar_contact": "📞 Contacto",
+        "phone": "📱 (509)-47385663",
+        "email": "✉️ deslandes78@gmail.com",
+        "website": "🌐 GlobalInternet.py",
+        "website_link": "https://globalinternetsitepy-abh7v6tnmskxxnuplrdcgk.streamlit.app/",
+        "lang_code": "Spanish"
+    },
+    "Haitian Creole": {
+        "app_title": "⚡ Dyagnostik Sikwi & Re-enjenyèri Materyèl",
+        "credit": "bati pa Gesner Deslandes",
+        "caption": "Chaje yon foto yon sikwi ki kraze, konekte sond USB a, epi kite AI a fè dyagnostik epi ede w konstwi yon nouvo aparèy ak chips ki kapab itilize yo.",
+        "sidebar_instructions": "**Enstriksyon**\n1. Konekte sond USB ou (Arduino oswa nenpòt aparèy ki voye JSON sou Serial).\n2. Chwazi pò USB ki kòrèk la anba epi klike sou Konekte.\n3. Sond ou DWE voye liy tankou: {\"chip\":\"U1\",\"voltage\":3.3}\n4. Chaje yon foto sikwi a.\n5. Kouri dyagnostik la.",
+        "usb_title": "🔌 Sond USB",
+        "select_port": "Chwazi pò USB",
+        "connect_btn": "Konekte",
+        "disconnect_btn": "Dekonekte",
+        "connected_success": "Konekte nan {}",
+        "failed_connect": "Echèk koneksyon",
+        "disconnected": "Dekonekte",
+        "last_reading": "Dènye lekti: {}",
+        "image_upload": "📸 Chaje imaj sikwi a",
+        "upload_label": "Pran yon foto sikwi a",
+        "analyze_btn": "🔍 Analize imaj ak AI",
+        "analyzing": "Analiz imaj (Groq Vision)...",
+        "analysis_complete": "Analiz fini",
+        "probe_readings_title": "📊 Lekti sond (USB)",
+        "clear_readings_btn": "Efase lekti yo",
+        "no_data": "Pa gen done ankò. Asire w sond ou ap voye liy JSON.",
+        "diagnostic_btn": "🚀 Kouri dyagnostik konplè (Imaj + Sond)",
+        "upload_first": "Tanpri chaje yon foto anvan.",
+        "running_diag": "Dyagnostik AI ap kouri...",
+        "diag_complete": "Dyagnostik fini.",
+        "diagnostic_report": "🩺 Rapò dyagnostik",
+        "device_type": "Kalite aparèy",
+        "probe_data_status": "Mezi reyèl sond yo itilize",
+        "probe_data_yes": "✅ Wi – {} mezi yo te resevwa nan sond USB la.",
+        "probe_data_no": "⚠️ Pa gen okenn done reyèl sond. Dyagnostik la se yon simulation ki baze sèlman sou imaj la. Tcheke koneksyon USB ou epi asire w sond la voye liy JSON.",
+        "fault_summary": "Rezime pwoblèm",
+        "actions": "Aksyon",
+        "recommended_tools": "Zouti rekòmande",
+        "build_title": "🤖 Konstwi nouvo materyèl apati plak sa a",
+        "build_desc": "Mande AI a pou l repwenti chips yo nan yon nouvo aparèy.",
+        "chat_placeholder": "Dekri sa w vle konstwi",
+        "designing": "Ap desine nouvo materyèl w la...",
+        "footer": "🔧 Konstwi ak Streamlit + Groq AI + USB Serial.",
+        "sidebar_contact": "📞 Kontak",
+        "phone": "📱 (509)-47385663",
+        "email": "✉️ deslandes78@gmail.com",
+        "website": "🌐 GlobalInternet.py",
+        "website_link": "https://globalinternetsitepy-abh7v6tnmskxxnuplrdcgk.streamlit.app/",
+        "lang_code": "Haitian Creole"
+    }
 }
 
 # ================== Groq Setup ==================
@@ -209,9 +343,10 @@ Return JSON with key "device_type".
     except Exception:
         return "Unknown device"
 
-# ================== Diagnostic Reasoning ==================
+# ================== Diagnostic Reasoning (corrected with escaped braces) ==================
 def diagnose_faults(chip_data, probe_readings, image_analysis, device_type, target_language):
     language_instruction = f"Output JSON in {target_language}."
+    # Escape curly braces by doubling them
     prompt = f"""
 {language_instruction}
 Device Type: {device_type}
@@ -219,7 +354,7 @@ Probe Readings (USB): {json.dumps(probe_readings, indent=2)}
 Image Analysis: {json.dumps(image_analysis, indent=2)}
 Chip Database: {json.dumps(chip_data, indent=2)}
 
-Return JSON with keys: "fault_summary", "actions" (list of {chip, fault, action, reason}), "recommended_tools".
+Return JSON with keys: "fault_summary", "actions" (list of objects with keys "chip", "fault", "action", "reason"), "recommended_tools".
 """
     response = client.chat.completions.create(
         model="llama-3.1-8b-instant",
@@ -312,7 +447,6 @@ if st.session_state.probe_connected:
     if data:
         st.session_state.probe_readings.append(data)
         st.sidebar.write(t["last_reading"].format(data))
-        # Show success icon in sidebar
         st.sidebar.success("✅ Receiving data!")
     else:
         st.sidebar.warning("⏳ Waiting for data... Make sure your probe is sending JSON lines.")
