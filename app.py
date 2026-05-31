@@ -20,25 +20,38 @@ st.set_page_config(
     initial_sidebar_state="expanded"
 )
 
-# ================== Styling ==================
+# ================== Styling (Purple Background) ==================
 st.markdown("""
 <style>
+    /* Main app background – purple gradient */
     .stApp {
-        background: linear-gradient(135deg, #0a0f1e 0%, #0d1b2a 100%);
+        background: linear-gradient(135deg, #2d1b69 0%, #5e2a84 100%) !important;
+        background-attachment: fixed;
     }
+    /* Sidebar background – same purple */
+    [data-testid="stSidebar"], [data-testid="stSidebarUserContent"], section[data-testid="stSidebar"] {
+        background: linear-gradient(135deg, #2d1b69 0%, #5e2a84 100%) !important;
+        background-attachment: fixed;
+    }
+    /* Change all default text to white for contrast */
+    h1, h2, h3, h4, p, label, .stMarkdown, .stSelectbox label, .st-bb, .st-at {
+        color: #ffffff !important;
+    }
+    /* Header gradient text */
     .main-header {
         font-size: 2.5rem;
-        background: linear-gradient(90deg, #00d4ff, #7b2ff7);
+        background: linear-gradient(90deg, #e0aaff, #ff99cc);
         -webkit-background-clip: text;
         -webkit-text-fill-color: transparent;
         text-align: center;
     }
+    /* Diagnostic card */
     .diagnostic-card {
-        background: rgba(255,255,255,0.05);
+        background: rgba(255,255,255,0.08);
         border-radius: 16px;
         padding: 20px;
         margin: 10px 0;
-        border-left: 4px solid #00d4ff;
+        border-left: 4px solid #e0aaff;
     }
     .fault-badge {
         background: #ff4b4b;
@@ -47,6 +60,22 @@ st.markdown("""
         border-radius: 20px;
         font-size: 0.7rem;
         display: inline-block;
+    }
+    /* Sidebar text and buttons */
+    .stSidebar .stButton button {
+        background-color: #7b2ff7;
+        color: white;
+    }
+    /* Input fields */
+    .stTextInput>div>div>input, .stTextArea>div>div>textarea, .stSelectbox>div>div>div {
+        background-color: rgba(255,255,255,0.1) !important;
+        color: white !important;
+        border: 1px solid #e0aaff !important;
+    }
+    /* Chat input */
+    .stChatInput input {
+        background-color: rgba(255,255,255,0.1) !important;
+        color: white !important;
     }
 </style>
 """, unsafe_allow_html=True)
@@ -72,7 +101,6 @@ def connect_to_probe(port, baudrate=115200, timeout=2):
         return None
 
 def read_probe_data(ser):
-    """Read line from serial probe. Expected JSON: {"chip": "U1", "pin": 5, "voltage": 3.3, "expected": 3.3}"""
     if ser and ser.in_waiting:
         line = ser.readline().decode('utf-8').strip()
         try:
@@ -84,8 +112,6 @@ def read_probe_data(ser):
 
 # ================== Image Analysis (Groq Vision) ==================
 def analyze_circuit_image(uploaded_image):
-    """Send image to Groq's vision model to identify chips and possible faults."""
-    # Convert PIL image to base64
     img = Image.open(uploaded_image)
     buffered = io.BytesIO()
     img.save(buffered, format="JPEG")
@@ -162,7 +188,6 @@ Answer in clear, actionable language.
     return response.choices[0].message.content
 
 # ================== Mock Chip Database ==================
-# FIXED: All values are now strings (no syntax error)
 DEFAULT_CHIP_DB = {
     "U1": {"type": "Voltage Regulator (LM7805)", "pins": {"in": "5-12V", "out": "5V", "gnd": "0V"}, "common_faults": ["overheating", "output short"]},
     "U2": {"type": "Microcontroller (STM32F103)", "pins": {"VDD": "3.3V", "VSS": "0V", "PA9": "TX"}, "common_faults": ["bent pins", "brownout"]},
@@ -204,7 +229,6 @@ if st.sidebar.button("Disconnect"):
     st.sidebar.info("Disconnected")
 
 if st.session_state.probe_connected:
-    # Poll for data (simple loop in Streamlit – works for demo)
     data = read_probe_data(st.session_state.probe_serial)
     if data:
         st.session_state.probe_readings.append(data)
@@ -247,7 +271,6 @@ if st.button("🚀 Run Full Diagnostic (Image + Probe)"):
         st.warning("Please upload an image first.")
     else:
         with st.spinner("Running AI diagnostics..."):
-            # Use the latest image analysis (or re-run)
             if uploaded_image and not st.session_state.image_analysis:
                 st.session_state.image_analysis = analyze_circuit_image(uploaded_image)
             result = diagnose_faults(
@@ -272,21 +295,18 @@ st.markdown("---")
 st.subheader("🤖 Build New Hardware from this Board")
 st.write("Ask the AI to redesign the salvageable chips into a completely new device (e.g., a custom drone controller, USB peripheral, etc.).")
 
-# Display chat history
 for msg in st.session_state.chat_history:
     with st.chat_message(msg["role"]):
         st.markdown(msg["content"])
 
-# Input for user query
 if prompt := st.chat_input("Describe what you want to build (e.g., 'Make a drone flight controller using the existing microcontroller and MOSFETs')"):
     st.session_state.chat_history.append({"role": "user", "content": prompt})
     with st.chat_message("user"):
         st.markdown(prompt)
     
-    # Prepare context: current image analysis + probe readings + diagnosis
     context = {
         "image_analysis": st.session_state.image_analysis,
-        "probe_readings": st.session_state.probe_readings[-10:],  # last 10
+        "probe_readings": st.session_state.probe_readings[-10:],
         "diagnosis": st.session_state.diagnosis_result,
         "available_chips": DEFAULT_CHIP_DB
     }
@@ -296,6 +316,5 @@ if prompt := st.chat_input("Describe what you want to build (e.g., 'Make a drone
             st.markdown(answer)
     st.session_state.chat_history.append({"role": "assistant", "content": answer})
 
-# ================== Footer ==================
 st.markdown("---")
 st.caption("🔧 Built with Streamlit + Groq AI + USB Serial. For full hardware integration, connect a probe that sends JSON diagnostics over USB.")
