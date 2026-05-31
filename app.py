@@ -2,7 +2,6 @@ import streamlit as st
 import serial
 import serial.tools.list_ports
 import json
-import time
 import base64
 import io
 import pandas as pd
@@ -61,13 +60,13 @@ st.markdown("""
 </style>
 """, unsafe_allow_html=True)
 
-# ================== Translation Dictionary ==================
+# ================== Translation Dictionary (full) ==================
 LANGUAGES = {
     "English": {
         "app_title": "⚡ Circuit Diagnostics & Hardware Re‑engineering",
         "credit": "built by Gesner Deslandes",
-        "caption": "Upload a photo (optional) of a broken circuit board, or connect a real USB probe. AI will diagnose faults + help you build new hardware.",
-        "sidebar_instructions": "**Instructions for REAL hardware**\n1. Build an Arduino probe (see README).\n2. Connect it to your computer via USB.\n3. Select the COM port and click Connect.\n4. The probe must send JSON lines like: {\"chip\":\"U3600\",\"voltage\":3.3}\n5. Run diagnostic.",
+        "caption": "Connect a real USB probe (Arduino) to your broken circuit, upload a photo (optional), and let AI diagnose faults + help you build new hardware.",
+        "sidebar_instructions": "**Instructions for REAL hardware**\n1. Build an Arduino probe (see code below).\n2. Connect it to your computer via USB.\n3. Select the COM port and click Connect.\n4. The probe must send JSON lines like: {\"chip\":\"U3600\",\"voltage\":3.3}\n5. Run diagnostic.",
         "usb_title": "🔌 REAL USB Probe (Arduino/FTDI)",
         "select_port": "Select USB Port",
         "connect_btn": "Connect",
@@ -101,17 +100,159 @@ LANGUAGES = {
         "chat_placeholder": "Describe what you want to build (e.g., 'Make a drone flight controller')",
         "designing": "Designing your new hardware...",
         "footer": "🔧 Built with Streamlit + Groq AI + USB Serial.",
+        "sidebar_company": "🌐 GlobalInternet.py",
+        "sidebar_credit": "AI Multi-Language Voice Translator",
+        "sidebar_founder": "Built by **Gesner Deslandes**, Engineer-in-Chief",
         "sidebar_contact": "📞 Contact",
         "phone": "📱 (509)-47385663",
         "email": "✉️ deslandes78@gmail.com",
         "website": "🌐 GlobalInternet.py",
         "website_link": "https://globalinternetsitepy-abh7v6tnmskxxnuplrdcgk.streamlit.app/",
-        "manual_add": "✏️ Manual Entry (only if no hardware)",
-        "manual_chip": "Chip name (e.g., U3600)",
-        "manual_voltage": "Measured Voltage (V)",
-        "manual_expected": "Expected Voltage (V)",
-        "manual_add_btn": "Add Reading",
         "lang_code": "English"
+    },
+    "French": {
+        "app_title": "⚡ Diagnostic de Circuits & Réingénierie Matérielle",
+        "credit": "conçu par Gesner Deslandes",
+        "caption": "Connectez une sonde USB réelle (Arduino) à votre circuit défectueux, téléchargez une photo (optionnelle), et laissez l'IA diagnostiquer les pannes + vous aider à construire un nouveau matériel.",
+        "sidebar_instructions": "**Instructions pour matériel réel**\n1. Construisez une sonde Arduino.\n2. Connectez-la à votre ordinateur via USB.\n3. Sélectionnez le port COM et cliquez sur Connecter.\n4. La sonde doit envoyer des lignes JSON comme : {\"chip\":\"U3600\",\"voltage\":3.3}\n5. Lancez le diagnostic.",
+        "usb_title": "🔌 Sonde USB RÉELLE (Arduino/FTDI)",
+        "select_port": "Sélectionnez le port USB",
+        "connect_btn": "Connecter",
+        "disconnect_btn": "Déconnecter",
+        "connected_success": "Connecté à {}",
+        "failed_connect": "Échec de la connexion",
+        "disconnected": "Déconnecté",
+        "last_reading": "Dernière lecture : {}",
+        "image_upload": "📸 Téléchargement de l'image du circuit (Optionnel)",
+        "upload_label": "Prenez une photo du circuit (optionnel)",
+        "analyze_btn": "🔍 Analyser l'image avec l'IA",
+        "analyzing": "Analyse de l'image (Groq Vision)...",
+        "analysis_complete": "Analyse terminée",
+        "probe_readings_title": "📊 Lectures en temps réel (sonde USB)",
+        "clear_readings_btn": "Effacer les lectures",
+        "no_data": "Pas encore de lectures. Connectez votre sonde USB réelle.",
+        "diagnostic_btn": "🚀 Exécuter le diagnostic complet (matériel réel)",
+        "running_diag": "Diagnostic IA avec données réelles...",
+        "diag_complete": "Diagnostic terminé.",
+        "diagnostic_report": "🩺 Rapport de diagnostic (mesures réelles)",
+        "device_type": "Type d'appareil (déduit)",
+        "manual_device_override": "Remplacement manuel du type d'appareil",
+        "probe_data_status": "Données de sonde réelles utilisées",
+        "probe_data_yes": "✅ Oui – {} mesures en direct de la sonde USB.",
+        "probe_data_no": "⚠️ Aucune donnée réelle. Connectez votre sonde Arduino.",
+        "fault_summary": "Résumé des pannes",
+        "actions": "Actions",
+        "recommended_tools": "Outils recommandés",
+        "build_title": "🤖 Construire un nouveau matériel à partir de cette carte",
+        "build_desc": "Demandez à l'IA de reconcevoir les puces récupérables en un tout nouvel appareil.",
+        "chat_placeholder": "Décrivez ce que vous voulez construire (ex: 'Fabrique un contrôleur de drone')",
+        "designing": "Conception du nouveau matériel...",
+        "footer": "🔧 Construit avec Streamlit + Groq AI + USB Serial.",
+        "sidebar_company": "🌐 GlobalInternet.py",
+        "sidebar_credit": "Traduction vocale IA multi-langues",
+        "sidebar_founder": "Construit par **Gesner Deslandes**, Ingénieur en chef",
+        "sidebar_contact": "📞 Contact",
+        "phone": "📱 (509)-47385663",
+        "email": "✉️ deslandes78@gmail.com",
+        "website": "🌐 GlobalInternet.py",
+        "website_link": "https://globalinternetsitepy-abh7v6tnmskxxnuplrdcgk.streamlit.app/",
+        "lang_code": "French"
+    },
+    "Spanish": {
+        "app_title": "⚡ Diagnóstico de Circuitos & Reingeniería de Hardware",
+        "credit": "construido por Gesner Deslandes",
+        "caption": "Conecte una sonda USB real (Arduino) a su circuito roto, suba una foto (opcional) y deje que la IA diagnostique fallos + le ayude a construir nuevo hardware.",
+        "sidebar_instructions": "**Instrucciones para hardware real**\n1. Construya una sonda Arduino.\n2. Conéctela a su computadora por USB.\n3. Seleccione el puerto COM y haga clic en Conectar.\n4. La sonda DEBE enviar líneas JSON como: {\"chip\":\"U3600\",\"voltage\":3.3}\n5. Ejecute el diagnóstico.",
+        "usb_title": "🔌 Sonda USB REAL (Arduino/FTDI)",
+        "select_port": "Seleccione el puerto USB",
+        "connect_btn": "Conectar",
+        "disconnect_btn": "Desconectar",
+        "connected_success": "Conectado a {}",
+        "failed_connect": "Error de conexión",
+        "disconnected": "Desconectado",
+        "last_reading": "Última lectura: {}",
+        "image_upload": "📸 Subir imagen del circuito (Opcional)",
+        "upload_label": "Tome una foto del circuito (opcional)",
+        "analyze_btn": "🔍 Analizar imagen con IA",
+        "analyzing": "Analizando imagen (Groq Vision)...",
+        "analysis_complete": "Análisis completo",
+        "probe_readings_title": "📊 Lecturas en tiempo real (sonda USB)",
+        "clear_readings_btn": "Borrar lecturas",
+        "no_data": "Aún no hay lecturas. Conecte su sonda USB real.",
+        "diagnostic_btn": "🚀 Ejecutar diagnóstico completo (hardware real)",
+        "running_diag": "Diagnóstico IA con datos reales...",
+        "diag_complete": "Diagnóstico completado.",
+        "diagnostic_report": "🩺 Informe de diagnóstico (mediciones reales)",
+        "device_type": "Tipo de dispositivo (inferido)",
+        "manual_device_override": "Anulación manual del tipo de dispositivo",
+        "probe_data_status": "Datos de sonda reales utilizados",
+        "probe_data_yes": "✅ Sí – {} mediciones en directo de la sonda USB.",
+        "probe_data_no": "⚠️ No hay datos reales. Conecte su sonda Arduino.",
+        "fault_summary": "Resumen de fallos",
+        "actions": "Acciones",
+        "recommended_tools": "Herramientas recomendadas",
+        "build_title": "🤖 Construir nuevo hardware desde esta placa",
+        "build_desc": "Pida a la IA que rediseñe los chips recuperables en un dispositivo completamente nuevo.",
+        "chat_placeholder": "Describa lo que quiere construir (ej: 'Haz un controlador de dron')",
+        "designing": "Diseñando su nuevo hardware...",
+        "footer": "🔧 Construido con Streamlit + Groq AI + USB Serial.",
+        "sidebar_company": "🌐 GlobalInternet.py",
+        "sidebar_credit": "Traducción de voz por IA multilingüe",
+        "sidebar_founder": "Construido por **Gesner Deslandes**, Ingeniero Jefe",
+        "sidebar_contact": "📞 Contacto",
+        "phone": "📱 (509)-47385663",
+        "email": "✉️ deslandes78@gmail.com",
+        "website": "🌐 GlobalInternet.py",
+        "website_link": "https://globalinternetsitepy-abh7v6tnmskxxnuplrdcgk.streamlit.app/",
+        "lang_code": "Spanish"
+    },
+    "Haitian Creole": {
+        "app_title": "⚡ Dyagnostik Sikwi & Re-enjenyèri Materyèl",
+        "credit": "bati pa Gesner Deslandes",
+        "caption": "Konekte yon sond USB reyèl (Arduino) nan sikwi kraze w, chaje yon foto (si ou vle), epi kite AI fè dyagnostik + ede w konstwi nouvo aparèy.",
+        "sidebar_instructions": "**Enstriksyon pou materyèl reyèl**\n1. Konstwi yon sond Arduino.\n2. Konekte li nan òdinatè w atravè USB.\n3. Chwazi pò COM epi klike sou Konekte.\n4. Sond la DWE voye liy JSON tankou: {\"chip\":\"U3600\",\"voltage\":3.3}\n5. Kouri dyagnostik la.",
+        "usb_title": "🔌 Sond USB RÉYÈL (Arduino/FTDI)",
+        "select_port": "Chwazi pò USB",
+        "connect_btn": "Konekte",
+        "disconnect_btn": "Dekonekte",
+        "connected_success": "Konekte nan {}",
+        "failed_connect": "Echèk koneksyon",
+        "disconnected": "Dekonekte",
+        "last_reading": "Dènye lekti: {}",
+        "image_upload": "📸 Chaje imaj sikwi a (Opsyonèl)",
+        "upload_label": "Pran yon foto sikwi a (si ou vle)",
+        "analyze_btn": "🔍 Analize imaj ak AI",
+        "analyzing": "Analiz imaj (Groq Vision)...",
+        "analysis_complete": "Analiz fini",
+        "probe_readings_title": "📊 Lekti an tan reyèl (sond USB)",
+        "clear_readings_btn": "Efase lekti yo",
+        "no_data": "Pa gen lekti ankò. Konekte sond USB reyèl ou.",
+        "diagnostic_btn": "🚀 Kouri dyagnostik konplè (materyèl reyèl)",
+        "running_diag": "Dyagnostik AI ak done reyèl...",
+        "diag_complete": "Dyagnostik fini.",
+        "diagnostic_report": "🩺 Rapò dyagnostik (mezi reyèl)",
+        "device_type": "Kalite aparèy (dedui)",
+        "manual_device_override": "Ranplasman maniyèl kalite aparèy",
+        "probe_data_status": "Done sond reyèl yo itilize",
+        "probe_data_yes": "✅ Wi – {} mezi an dirèk nan sond USB.",
+        "probe_data_no": "⚠️ Pa gen done reyèl. Konekte sond Arduino ou.",
+        "fault_summary": "Rezime pwoblèm",
+        "actions": "Aksyon",
+        "recommended_tools": "Zouti rekòmande",
+        "build_title": "🤖 Konstwi nouvo materyèl apati plak sa a",
+        "build_desc": "Mande AI a pou l repwenti chips yo nan yon nouvo aparèy.",
+        "chat_placeholder": "Dekri sa w vle konstwi (egzanp: 'Fè yon kontwolè drone')",
+        "designing": "Ap desine nouvo materyèl w la...",
+        "footer": "🔧 Konstwi ak Streamlit + Groq AI + USB Serial.",
+        "sidebar_company": "🌐 GlobalInternet.py",
+        "sidebar_credit": "Tradiksyon vwa AI miltilang",
+        "sidebar_founder": "Bati pa **Gesner Deslandes**, Enjenyè anchèf",
+        "sidebar_contact": "📞 Kontak",
+        "phone": "📱 (509)-47385663",
+        "email": "✉️ deslandes78@gmail.com",
+        "website": "🌐 GlobalInternet.py",
+        "website_link": "https://globalinternetsitepy-abh7v6tnmskxxnuplrdcgk.streamlit.app/",
+        "lang_code": "Haitian Creole"
     }
 }
 
@@ -139,8 +280,7 @@ def read_probe_data(ser):
     if ser and ser.in_waiting:
         line = ser.readline().decode('utf-8').strip()
         try:
-            data = json.loads(line)
-            return data
+            return json.loads(line)
         except:
             return {"raw": line}
     return None
@@ -174,7 +314,7 @@ Return as JSON with keys: chips, visible_damage, likely_failed_components, diagn
         )
         return json.loads(response.choices[0].message.content)
     except Exception as e:
-        return {"error": str(e), "chips": [], "likely_failed_components": "Could not analyze"}
+        return {"error": str(e), "chips": []}
 
 # ================== Device Identification ==================
 def identify_device(image_analysis, readings, manual_override):
@@ -246,22 +386,49 @@ Suggest which chips can be reused, new components, wiring, and firmware.
 
 # ================== Chip Database ==================
 CHIP_DB = {
-    "U3600": {"type": "PMIC (Power Management)", "pins": {"VBATT": "3.8V", "VDD_MAIN": "3.8V"}, "common_faults": ["overheating", "short"]},
-    "U3301": {"type": "NAND Flash", "pins": {"VDD_NAND": "1.8V"}, "common_faults": ["dead", "no power"]},
-    "U3100": {"type": "A11 Bionic CPU", "pins": {"VCC_MAIN": "3.8V"}, "common_faults": ["shorted capacitor", "dead CPU"]},
-    "U5600": {"type": "USB/Charging IC", "pins": {"V_BUS": "5V", "VBATT": "3.8V"}, "common_faults": ["overvoltage", "no charging"]},
-    "U1": {"type": "Voltage Regulator (LM7805)", "pins": {"in": "5-12V", "out": "5V"}, "common_faults": ["overheating"]},
+    "U3600": {"type": "PMIC (Power Management)", "expected": {"VBATT": 3.8, "VDD_MAIN": 3.8}},
+    "U3301": {"type": "NAND Flash", "expected": {"VDD_NAND": 1.8}},
+    "U3100": {"type": "A11 Bionic CPU", "expected": {"VCC_MAIN": 3.8}},
+    "U5600": {"type": "USB/Charging IC", "expected": {"V_BUS": 5.0, "VBATT": 3.8}},
+    "U1": {"type": "Voltage Regulator", "expected": {"out": 5.0}},
 }
 
 # ================== Session State ==================
-for key in ["probe_serial", "probe_connected", "image_analysis", "readings", "diagnosis_result", "device_type", "chat_history", "lang", "manual_device_override"]:
-    if key not in st.session_state:
-        st.session_state[key] = None if "serial" in key else (False if "connected" in key else ([] if "readings" in key or "chat_history" in key else ({} if "analysis" in key else ("English" if key == "lang" else "Auto-detect"))))
-
-t = LANGUAGES["English"]
+if "probe_serial" not in st.session_state:
+    st.session_state.probe_serial = None
+if "probe_connected" not in st.session_state:
+    st.session_state.probe_connected = False
+if "image_analysis" not in st.session_state:
+    st.session_state.image_analysis = None
+if "readings" not in st.session_state:
+    st.session_state.readings = []
+if "diagnosis_result" not in st.session_state:
+    st.session_state.diagnosis_result = None
+if "device_type" not in st.session_state:
+    st.session_state.device_type = None
+if "chat_history" not in st.session_state:
+    st.session_state.chat_history = []
+if "lang" not in st.session_state:
+    st.session_state.lang = "English"
+if "manual_device_override" not in st.session_state:
+    st.session_state.manual_device_override = "Auto-detect"
 
 # ================== Sidebar ==================
-st.sidebar.title("🔧 Real Hardware Connection")
+st.sidebar.markdown(f"## {LANGUAGES[st.session_state.lang]['sidebar_company']}")
+st.sidebar.markdown(f"### {LANGUAGES[st.session_state.lang]['sidebar_credit']}")
+st.sidebar.markdown(LANGUAGES[st.session_state.lang]['sidebar_founder'])
+st.sidebar.markdown("---")
+
+# Language selector
+lang_options = list(LANGUAGES.keys())
+selected_lang = st.sidebar.selectbox("🌐 Language / Langue / Idioma", lang_options, index=lang_options.index(st.session_state.lang))
+if selected_lang != st.session_state.lang:
+    st.session_state.lang = selected_lang
+    st.rerun()
+t = LANGUAGES[st.session_state.lang]
+
+st.sidebar.markdown("---")
+st.sidebar.title(t["usb_title"])
 ports = list_usb_ports()
 if ports:
     port_options = {p["device"]: f"{p['device']} - {p['description']}" for p in ports}
@@ -301,9 +468,17 @@ st.sidebar.info(t["sidebar_instructions"])
 device_options = ["Auto-detect", "iPhone 8+", "iPhone X", "Samsung Galaxy", "Laptop", "Desktop"]
 st.sidebar.selectbox(t["manual_device_override"], device_options, key="manual_device_override")
 
+st.sidebar.markdown("---")
+st.sidebar.subheader(t["sidebar_contact"])
+st.sidebar.write(t["phone"])
+st.sidebar.write(t["email"])
+st.sidebar.markdown(f"[{t['website']}]({t['website_link']})")
+st.sidebar.markdown("---")
+
 # ================== Main Layout ==================
 st.markdown(f"<h1 class='main-header'>{t['app_title']}</h1>", unsafe_allow_html=True)
 st.markdown(f"<p class='credit'>{t['credit']}</p>", unsafe_allow_html=True)
+st.caption(t["caption"])
 
 col1, col2 = st.columns([1, 1])
 with col1:
@@ -343,7 +518,7 @@ if st.button(t["diagnostic_btn"]):
                 probe_readings=st.session_state.readings,
                 image_analysis=st.session_state.image_analysis,
                 device_type=st.session_state.device_type,
-                target_language="English"
+                target_language=t["lang_code"]
             )
             st.session_state.diagnosis_result = result
             st.success(t["diag_complete"])
@@ -352,13 +527,41 @@ if st.session_state.diagnosis_result:
     st.subheader(t["diagnostic_report"])
     res = st.session_state.diagnosis_result
     st.write(f"**{t['device_type']}:** {st.session_state.device_type}")
-    st.write(f"**Real probe data used:** ✅ {len(st.session_state.readings)} live measurements")
+    st.write(f"**{t['probe_data_status']}:**")
+    if st.session_state.probe_connected and st.session_state.readings:
+        st.success(t["probe_data_yes"].format(len(st.session_state.readings)))
+    else:
+        st.info(t["probe_data_no"])
     st.write(f"**{t['fault_summary']}:** {res.get('fault_summary', 'N/A')}")
     st.write(f"**{t['actions']}:**")
     for act in res.get('actions', []):
         st.markdown(f"- **{act.get('chip')}** : {act.get('fault')} → {act.get('action')} ({act.get('reason')})")
     st.write(f"**{t['recommended_tools']}:** {', '.join(res.get('recommended_tools', []))}")
 
-# ================== Footer ==================
+# Redesign Chatbot
+st.markdown("---")
+st.subheader(t["build_title"])
+st.write(t["build_desc"])
+
+for msg in st.session_state.chat_history:
+    with st.chat_message(msg["role"]):
+        st.markdown(msg["content"])
+
+if prompt := st.chat_input(t["chat_placeholder"]):
+    st.session_state.chat_history.append({"role": "user", "content": prompt})
+    with st.chat_message("user"):
+        st.markdown(prompt)
+    context = {
+        "image_analysis": st.session_state.image_analysis,
+        "readings": st.session_state.readings[-10:],
+        "diagnosis": st.session_state.diagnosis_result,
+        "device_type": st.session_state.device_type
+    }
+    with st.chat_message("assistant"):
+        with st.spinner(t["designing"]):
+            answer = redesign_question(prompt, context, t["lang_code"])
+            st.markdown(answer)
+    st.session_state.chat_history.append({"role": "assistant", "content": answer})
+
 st.markdown("---")
 st.caption(t["footer"])
