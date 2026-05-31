@@ -60,13 +60,16 @@ st.markdown("""
 </style>
 """, unsafe_allow_html=True)
 
-# ================== Translation Dictionary (full) ==================
+# ================== Translation Dictionary ==================
 LANGUAGES = {
     "English": {
         "app_title": "⚡ Circuit Diagnostics & Hardware Re‑engineering",
         "credit": "built by Gesner Deslandes",
-        "caption": "Connect a real USB probe (Arduino) to your broken circuit, upload a photo (optional), and let AI diagnose faults + help you build new hardware.",
-        "sidebar_instructions": "**Instructions for REAL hardware**\n1. Build an Arduino probe (see code below).\n2. Connect it to your computer via USB.\n3. Select the COM port and click Connect.\n4. The probe must send JSON lines like: {\"chip\":\"U3600\",\"voltage\":3.3}\n5. Run diagnostic.",
+        "caption": "Connect a real USB probe (Arduino) OR enable Demo Mode. AI diagnoses faults + helps you build new hardware.",
+        "sidebar_instructions": "**Instructions for REAL hardware**\n1. Build an Arduino probe (see code).\n2. Connect to computer via USB.\n3. Select COM port and click Connect.\n4. Probe sends JSON lines like {\"chip\":\"U3600\",\"voltage\":3.3}\n5. Run diagnostic.",
+        "demo_mode_label": "🎮 Demo Mode (simulate readings)",
+        "load_demo_btn": "Load Demo iPhone 8+ Readings",
+        "demo_loaded_msg": "Loaded {} demo readings.",
         "usb_title": "🔌 REAL USB Probe (Arduino/FTDI)",
         "select_port": "Select USB Port",
         "connect_btn": "Connect",
@@ -80,18 +83,19 @@ LANGUAGES = {
         "analyze_btn": "🔍 Analyze Image with AI",
         "analyzing": "Analyzing image (Groq Vision)...",
         "analysis_complete": "Analysis complete",
-        "probe_readings_title": "📊 Real-time Readings (from USB probe)",
+        "probe_readings_title": "📊 Readings (Real or Demo)",
         "clear_readings_btn": "Clear Readings",
-        "no_data": "No readings yet. Connect your real USB probe.",
-        "diagnostic_btn": "🚀 Run Full Diagnostic (REAL hardware)",
-        "running_diag": "Running AI diagnostics with real data...",
+        "no_data": "No readings yet. Connect a real probe or load demo readings.",
+        "diagnostic_btn": "🚀 Run Full Diagnostic",
+        "running_diag": "Running AI diagnostics...",
         "diag_complete": "Diagnostic completed.",
-        "diagnostic_report": "🩺 Diagnostic Report (REAL measurements)",
+        "diagnostic_report": "🩺 Diagnostic Report",
         "device_type": "Device Type (inferred)",
         "manual_device_override": "Manual Device Type Override (if auto fails)",
-        "probe_data_status": "Real probe data used",
-        "probe_data_yes": "✅ Yes – {} live measurements from USB probe.",
-        "probe_data_no": "⚠️ No real probe data. Please connect your Arduino probe.",
+        "probe_data_status": "Data source",
+        "probe_data_real": "✅ Real hardware ({} live measurements)",
+        "probe_data_demo": "🎮 Demonstration mode ({} simulated readings)",
+        "probe_data_none": "⚠️ No readings. Please load demo or connect a probe.",
         "fault_summary": "Fault Summary",
         "actions": "Actions",
         "recommended_tools": "Recommended Tools",
@@ -101,7 +105,7 @@ LANGUAGES = {
         "designing": "Designing your new hardware...",
         "footer": "🔧 Built with Streamlit + Groq AI + USB Serial.",
         "sidebar_company": "🌐 GlobalInternet.py",
-        "sidebar_credit": "AI Multi-Language Voice Translator",
+        "sidebar_credit": "AI Multi‑Language Voice Translator",
         "sidebar_founder": "Built by **Gesner Deslandes**, Engineer-in-Chief",
         "sidebar_contact": "📞 Contact",
         "phone": "📱 (509)-47385663",
@@ -113,8 +117,11 @@ LANGUAGES = {
     "French": {
         "app_title": "⚡ Diagnostic de Circuits & Réingénierie Matérielle",
         "credit": "conçu par Gesner Deslandes",
-        "caption": "Connectez une sonde USB réelle (Arduino) à votre circuit défectueux, téléchargez une photo (optionnelle), et laissez l'IA diagnostiquer les pannes + vous aider à construire un nouveau matériel.",
-        "sidebar_instructions": "**Instructions pour matériel réel**\n1. Construisez une sonde Arduino.\n2. Connectez-la à votre ordinateur via USB.\n3. Sélectionnez le port COM et cliquez sur Connecter.\n4. La sonde doit envoyer des lignes JSON comme : {\"chip\":\"U3600\",\"voltage\":3.3}\n5. Lancez le diagnostic.",
+        "caption": "Connectez une sonde USB réelle (Arduino) OU activez le mode démo. L'IA diagnostique les pannes + aide à construire un nouveau matériel.",
+        "sidebar_instructions": "**Instructions pour matériel réel**\n1. Construisez une sonde Arduino.\n2. Connectez-la par USB.\n3. Sélectionnez le port COM et cliquez Connecter.\n4. La sonde envoie des lignes JSON comme {\"chip\":\"U3600\",\"voltage\":3.3}\n5. Lancez le diagnostic.",
+        "demo_mode_label": "🎮 Mode Démo (simuler des lectures)",
+        "load_demo_btn": "Charger les lectures démo iPhone 8+",
+        "demo_loaded_msg": "{} lectures démo chargées.",
         "usb_title": "🔌 Sonde USB RÉELLE (Arduino/FTDI)",
         "select_port": "Sélectionnez le port USB",
         "connect_btn": "Connecter",
@@ -128,18 +135,19 @@ LANGUAGES = {
         "analyze_btn": "🔍 Analyser l'image avec l'IA",
         "analyzing": "Analyse de l'image (Groq Vision)...",
         "analysis_complete": "Analyse terminée",
-        "probe_readings_title": "📊 Lectures en temps réel (sonde USB)",
+        "probe_readings_title": "📊 Lectures (réelles ou démo)",
         "clear_readings_btn": "Effacer les lectures",
-        "no_data": "Pas encore de lectures. Connectez votre sonde USB réelle.",
-        "diagnostic_btn": "🚀 Exécuter le diagnostic complet (matériel réel)",
-        "running_diag": "Diagnostic IA avec données réelles...",
+        "no_data": "Pas encore de lectures. Connectez une sonde réelle ou chargez les lectures démo.",
+        "diagnostic_btn": "🚀 Exécuter le diagnostic complet",
+        "running_diag": "Diagnostic IA en cours...",
         "diag_complete": "Diagnostic terminé.",
-        "diagnostic_report": "🩺 Rapport de diagnostic (mesures réelles)",
+        "diagnostic_report": "🩺 Rapport de diagnostic",
         "device_type": "Type d'appareil (déduit)",
         "manual_device_override": "Remplacement manuel du type d'appareil",
-        "probe_data_status": "Données de sonde réelles utilisées",
-        "probe_data_yes": "✅ Oui – {} mesures en direct de la sonde USB.",
-        "probe_data_no": "⚠️ Aucune donnée réelle. Connectez votre sonde Arduino.",
+        "probe_data_status": "Source des données",
+        "probe_data_real": "✅ Matériel réel ({} mesures en direct)",
+        "probe_data_demo": "🎮 Mode démonstration ({} lectures simulées)",
+        "probe_data_none": "⚠️ Aucune lecture. Chargez une démo ou connectez une sonde.",
         "fault_summary": "Résumé des pannes",
         "actions": "Actions",
         "recommended_tools": "Outils recommandés",
@@ -149,7 +157,7 @@ LANGUAGES = {
         "designing": "Conception du nouveau matériel...",
         "footer": "🔧 Construit avec Streamlit + Groq AI + USB Serial.",
         "sidebar_company": "🌐 GlobalInternet.py",
-        "sidebar_credit": "Traduction vocale IA multi-langues",
+        "sidebar_credit": "Traduction vocale IA multi‑langues",
         "sidebar_founder": "Construit par **Gesner Deslandes**, Ingénieur en chef",
         "sidebar_contact": "📞 Contact",
         "phone": "📱 (509)-47385663",
@@ -161,8 +169,11 @@ LANGUAGES = {
     "Spanish": {
         "app_title": "⚡ Diagnóstico de Circuitos & Reingeniería de Hardware",
         "credit": "construido por Gesner Deslandes",
-        "caption": "Conecte una sonda USB real (Arduino) a su circuito roto, suba una foto (opcional) y deje que la IA diagnostique fallos + le ayude a construir nuevo hardware.",
-        "sidebar_instructions": "**Instrucciones para hardware real**\n1. Construya una sonda Arduino.\n2. Conéctela a su computadora por USB.\n3. Seleccione el puerto COM y haga clic en Conectar.\n4. La sonda DEBE enviar líneas JSON como: {\"chip\":\"U3600\",\"voltage\":3.3}\n5. Ejecute el diagnóstico.",
+        "caption": "Conecte una sonda USB real (Arduino) O active el modo demo. La IA diagnostica fallos + ayuda a construir nuevo hardware.",
+        "sidebar_instructions": "**Instrucciones para hardware real**\n1. Construya una sonda Arduino.\n2. Conéctela por USB.\n3. Seleccione el puerto COM y haga clic en Conectar.\n4. La sonda envía líneas JSON como {\"chip\":\"U3600\",\"voltage\":3.3}\n5. Ejecute el diagnóstico.",
+        "demo_mode_label": "🎮 Modo Demo (simular lecturas)",
+        "load_demo_btn": "Cargar lecturas demo iPhone 8+",
+        "demo_loaded_msg": "{} lecturas demo cargadas.",
         "usb_title": "🔌 Sonda USB REAL (Arduino/FTDI)",
         "select_port": "Seleccione el puerto USB",
         "connect_btn": "Conectar",
@@ -176,18 +187,19 @@ LANGUAGES = {
         "analyze_btn": "🔍 Analizar imagen con IA",
         "analyzing": "Analizando imagen (Groq Vision)...",
         "analysis_complete": "Análisis completo",
-        "probe_readings_title": "📊 Lecturas en tiempo real (sonda USB)",
+        "probe_readings_title": "📊 Lecturas (reales o demo)",
         "clear_readings_btn": "Borrar lecturas",
-        "no_data": "Aún no hay lecturas. Conecte su sonda USB real.",
-        "diagnostic_btn": "🚀 Ejecutar diagnóstico completo (hardware real)",
-        "running_diag": "Diagnóstico IA con datos reales...",
+        "no_data": "Aún no hay lecturas. Conecte una sonda real o cargue lecturas demo.",
+        "diagnostic_btn": "🚀 Ejecutar diagnóstico completo",
+        "running_diag": "Diagnóstico IA en curso...",
         "diag_complete": "Diagnóstico completado.",
-        "diagnostic_report": "🩺 Informe de diagnóstico (mediciones reales)",
+        "diagnostic_report": "🩺 Informe de diagnóstico",
         "device_type": "Tipo de dispositivo (inferido)",
         "manual_device_override": "Anulación manual del tipo de dispositivo",
-        "probe_data_status": "Datos de sonda reales utilizados",
-        "probe_data_yes": "✅ Sí – {} mediciones en directo de la sonda USB.",
-        "probe_data_no": "⚠️ No hay datos reales. Conecte su sonda Arduino.",
+        "probe_data_status": "Fuente de datos",
+        "probe_data_real": "✅ Hardware real ({} mediciones en directo)",
+        "probe_data_demo": "🎮 Modo demostración ({} lecturas simuladas)",
+        "probe_data_none": "⚠️ Sin lecturas. Cargue una demo o conecte una sonda.",
         "fault_summary": "Resumen de fallos",
         "actions": "Acciones",
         "recommended_tools": "Herramientas recomendadas",
@@ -209,8 +221,11 @@ LANGUAGES = {
     "Haitian Creole": {
         "app_title": "⚡ Dyagnostik Sikwi & Re-enjenyèri Materyèl",
         "credit": "bati pa Gesner Deslandes",
-        "caption": "Konekte yon sond USB reyèl (Arduino) nan sikwi kraze w, chaje yon foto (si ou vle), epi kite AI fè dyagnostik + ede w konstwi nouvo aparèy.",
-        "sidebar_instructions": "**Enstriksyon pou materyèl reyèl**\n1. Konstwi yon sond Arduino.\n2. Konekte li nan òdinatè w atravè USB.\n3. Chwazi pò COM epi klike sou Konekte.\n4. Sond la DWE voye liy JSON tankou: {\"chip\":\"U3600\",\"voltage\":3.3}\n5. Kouri dyagnostik la.",
+        "caption": "Konekte yon sond USB reyèl (Arduino) OSWA aktive Mod Demo. AI fè dyagnostik + ede w konstwi nouvo aparèy.",
+        "sidebar_instructions": "**Enstriksyon pou materyèl reyèl**\n1. Konstwi yon sond Arduino.\n2. Konekte li nan òdinatè w atravè USB.\n3. Chwazi pò COM epi klike Konekte.\n4. Sond la voye liy JSON tankou {\"chip\":\"U3600\",\"voltage\":3.3}\n5. Kouri dyagnostik la.",
+        "demo_mode_label": "🎮 Mod Demo (simile lekti)",
+        "load_demo_btn": "Chaje lekti demo iPhone 8+",
+        "demo_loaded_msg": "{} lekti demo chaje.",
         "usb_title": "🔌 Sond USB RÉYÈL (Arduino/FTDI)",
         "select_port": "Chwazi pò USB",
         "connect_btn": "Konekte",
@@ -224,18 +239,19 @@ LANGUAGES = {
         "analyze_btn": "🔍 Analize imaj ak AI",
         "analyzing": "Analiz imaj (Groq Vision)...",
         "analysis_complete": "Analiz fini",
-        "probe_readings_title": "📊 Lekti an tan reyèl (sond USB)",
+        "probe_readings_title": "📊 Lekti (reyèl oswa demo)",
         "clear_readings_btn": "Efase lekti yo",
-        "no_data": "Pa gen lekti ankò. Konekte sond USB reyèl ou.",
-        "diagnostic_btn": "🚀 Kouri dyagnostik konplè (materyèl reyèl)",
-        "running_diag": "Dyagnostik AI ak done reyèl...",
+        "no_data": "Pa gen lekti ankò. Konekte yon sond reyèl oswa chaje lekti demo.",
+        "diagnostic_btn": "🚀 Kouri dyagnostik konplè",
+        "running_diag": "Dyagnostik AI ap kouri...",
         "diag_complete": "Dyagnostik fini.",
-        "diagnostic_report": "🩺 Rapò dyagnostik (mezi reyèl)",
+        "diagnostic_report": "🩺 Rapò dyagnostik",
         "device_type": "Kalite aparèy (dedui)",
         "manual_device_override": "Ranplasman maniyèl kalite aparèy",
-        "probe_data_status": "Done sond reyèl yo itilize",
-        "probe_data_yes": "✅ Wi – {} mezi an dirèk nan sond USB.",
-        "probe_data_no": "⚠️ Pa gen done reyèl. Konekte sond Arduino ou.",
+        "probe_data_status": "Sous done",
+        "probe_data_real": "✅ Materyèl reyèl ({} mezi an dirèk)",
+        "probe_data_demo": "🎮 Mod demonstrasyon ({} lekti simule)",
+        "probe_data_none": "⚠️ Pa gen lekti. Chaje yon demo oswa konekte yon sond.",
         "fault_summary": "Rezime pwoblèm",
         "actions": "Aksyon",
         "recommended_tools": "Zouti rekòmande",
@@ -351,7 +367,7 @@ def diagnose_faults(chip_data, probe_readings, image_analysis, device_type, targ
     img_info = image_analysis if image_analysis and not image_analysis.get("error") else {"chips": [], "visible_damage": [], "likely_failed_components": []}
     prompt = f"""{language_instruction}
 Device Type: {device_type}
-Readings (REAL hardware): {json.dumps(probe_readings, indent=2)}
+Readings: {json.dumps(probe_readings, indent=2)}
 Image Analysis (if any): {json.dumps(img_info, indent=2)}
 Chip Database: {json.dumps(chip_data, indent=2)}
 
@@ -372,7 +388,7 @@ Return JSON with keys:
 def redesign_question(question, context, target_language):
     language_instruction = f"Answer in {target_language}."
     prompt = f"""{language_instruction}
-The user has a broken board with this real hardware data: {json.dumps(context, indent=2)}
+The user has a broken board with this data: {json.dumps(context, indent=2)}
 They ask: "{question}"
 Suggest which chips can be reused, new components, wiring, and firmware.
 """
@@ -393,6 +409,14 @@ CHIP_DB = {
     "U1": {"type": "Voltage Regulator", "expected": {"out": 5.0}},
 }
 
+# ================== Demo Readings ==================
+DEMO_READINGS = [
+    {"chip": "U3600", "voltage": 3.8, "expected": 3.8},
+    {"chip": "U3301", "voltage": 0.0, "expected": 1.8},
+    {"chip": "U3100", "voltage": 0.5, "expected": 3.8},
+    {"chip": "U5600", "voltage": 5.0, "expected": 5.0},
+]
+
 # ================== Session State ==================
 if "probe_serial" not in st.session_state:
     st.session_state.probe_serial = None
@@ -412,6 +436,8 @@ if "lang" not in st.session_state:
     st.session_state.lang = "English"
 if "manual_device_override" not in st.session_state:
     st.session_state.manual_device_override = "Auto-detect"
+if "demo_mode" not in st.session_state:
+    st.session_state.demo_mode = False
 
 # ================== Sidebar ==================
 st.sidebar.markdown(f"## {LANGUAGES[st.session_state.lang]['sidebar_company']}")
@@ -428,43 +454,65 @@ if selected_lang != st.session_state.lang:
 t = LANGUAGES[st.session_state.lang]
 
 st.sidebar.markdown("---")
-st.sidebar.title(t["usb_title"])
-ports = list_usb_ports()
-if ports:
-    port_options = {p["device"]: f"{p['device']} - {p['description']}" for p in ports}
-    selected_port = st.sidebar.selectbox(t["select_port"], options=list(port_options.keys()), format_func=lambda x: port_options[x])
-else:
-    selected_port = None
-    st.sidebar.warning("No USB ports detected. Plug in your Arduino probe and refresh.")
 
-if st.sidebar.button(t["connect_btn"], disabled=st.session_state.probe_connected):
-    if selected_port:
-        ser = connect_to_probe(selected_port)
-        if ser:
-            st.session_state.probe_serial = ser
-            st.session_state.probe_connected = True
-            st.sidebar.success(t["connected_success"].format(selected_port))
-        else:
-            st.sidebar.error(t["failed_connect"])
-if st.sidebar.button(t["disconnect_btn"]):
-    if st.session_state.probe_serial:
-        st.session_state.probe_serial.close()
-    st.session_state.probe_connected = False
-    st.session_state.probe_serial = None
-    st.sidebar.info(t["disconnected"])
+# Demo Mode Toggle
+demo_toggle = st.sidebar.checkbox(t["demo_mode_label"], value=st.session_state.demo_mode)
+if demo_toggle != st.session_state.demo_mode:
+    st.session_state.demo_mode = demo_toggle
+    if st.session_state.demo_mode:
+        # Clear real probe connection if any
+        if st.session_state.probe_serial:
+            st.session_state.probe_serial.close()
+        st.session_state.probe_connected = False
+        st.session_state.probe_serial = None
+    st.rerun()
 
-if st.session_state.probe_connected:
-    data = read_probe_data(st.session_state.probe_serial)
-    if data:
-        st.session_state.readings.append(data)
-        st.sidebar.success(f"✅ Live data: {data}")
+if not st.session_state.demo_mode:
+    # Real hardware mode
+    st.sidebar.title(t["usb_title"])
+    ports = list_usb_ports()
+    if ports:
+        port_options = {p["device"]: f"{p['device']} - {p['description']}" for p in ports}
+        selected_port = st.sidebar.selectbox(t["select_port"], options=list(port_options.keys()), format_func=lambda x: port_options[x])
     else:
-        st.sidebar.warning("⏳ Waiting for data from Arduino...")
+        selected_port = None
+        st.sidebar.warning("No USB ports detected. Plug in your Arduino probe and refresh.")
+
+    if st.sidebar.button(t["connect_btn"], disabled=st.session_state.probe_connected):
+        if selected_port:
+            ser = connect_to_probe(selected_port)
+            if ser:
+                st.session_state.probe_serial = ser
+                st.session_state.probe_connected = True
+                st.sidebar.success(t["connected_success"].format(selected_port))
+            else:
+                st.sidebar.error(t["failed_connect"])
+    if st.sidebar.button(t["disconnect_btn"]):
+        if st.session_state.probe_serial:
+            st.session_state.probe_serial.close()
+        st.session_state.probe_connected = False
+        st.session_state.probe_serial = None
+        st.sidebar.info(t["disconnected"])
+
+    if st.session_state.probe_connected:
+        data = read_probe_data(st.session_state.probe_serial)
+        if data:
+            st.session_state.readings.append(data)
+            st.sidebar.success(f"✅ Live data: {data}")
+        else:
+            st.sidebar.warning("⏳ Waiting for data from Arduino...")
+else:
+    # Demo mode
+    st.sidebar.info("🎮 **Demo Mode Active** – No hardware needed.")
+    if st.sidebar.button(t["load_demo_btn"]):
+        st.session_state.readings = DEMO_READINGS.copy()
+        st.sidebar.success(t["demo_loaded_msg"].format(len(DEMO_READINGS)))
+        st.rerun()
 
 st.sidebar.markdown("---")
 st.sidebar.info(t["sidebar_instructions"])
 
-# Manual device override
+# Manual device override (applies in both modes)
 device_options = ["Auto-detect", "iPhone 8+", "iPhone X", "Samsung Galaxy", "Laptop", "Desktop"]
 st.sidebar.selectbox(t["manual_device_override"], device_options, key="manual_device_override")
 
@@ -498,12 +546,12 @@ with col2:
             st.session_state.readings = []
             st.rerun()
     else:
-        st.info("No live readings yet. Connect your Arduino probe and ensure it sends JSON.")
+        st.info(t["no_data"])
 
 # Diagnostic Button
 if st.button(t["diagnostic_btn"]):
     if not st.session_state.readings:
-        st.warning("No real hardware readings. Please connect your USB probe first.")
+        st.warning("Please add readings (load demo or connect a real probe).")
     else:
         with st.spinner(t["running_diag"]):
             if uploaded_image and not st.session_state.image_analysis:
@@ -528,10 +576,12 @@ if st.session_state.diagnosis_result:
     res = st.session_state.diagnosis_result
     st.write(f"**{t['device_type']}:** {st.session_state.device_type}")
     st.write(f"**{t['probe_data_status']}:**")
-    if st.session_state.probe_connected and st.session_state.readings:
-        st.success(t["probe_data_yes"].format(len(st.session_state.readings)))
+    if st.session_state.demo_mode:
+        st.info(t["probe_data_demo"].format(len(st.session_state.readings)))
+    elif st.session_state.probe_connected and st.session_state.readings:
+        st.success(t["probe_data_real"].format(len(st.session_state.readings)))
     else:
-        st.info(t["probe_data_no"])
+        st.warning(t["probe_data_none"])
     st.write(f"**{t['fault_summary']}:** {res.get('fault_summary', 'N/A')}")
     st.write(f"**{t['actions']}:**")
     for act in res.get('actions', []):
