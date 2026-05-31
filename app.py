@@ -304,9 +304,8 @@ Return as JSON with keys: chips, visible_damage, likely_failed_components, diagn
     except Exception as e:
         return {"error": str(e), "chips": [], "likely_failed_components": "Could not analyze"}
 
-# ================== Device Identification (new) ==================
+# ================== Device Identification ==================
 def identify_device(image_analysis, target_language):
-    """Use LLM to identify what kind of device the circuit board belongs to (laptop, desktop, tablet, etc.)."""
     language_instruction = f"Answer in {target_language}."
     prompt = f"""
 {language_instruction}
@@ -330,7 +329,7 @@ Return a JSON with keys:
     except Exception:
         return "Unknown device"
 
-# ================== Diagnostic Reasoning (with language support) ==================
+# ================== Diagnostic Reasoning ==================
 def diagnose_faults(chip_data, probe_readings, image_analysis, device_type, target_language):
     language_instruction = f"Output the entire JSON in {target_language}. "
     prompt = f"""
@@ -355,7 +354,7 @@ Provide output as JSON with keys:
     )
     return json.loads(response.choices[0].message.content)
 
-# ================== Hardware Redesign Assistant (with language support) ==================
+# ================== Hardware Redesign Assistant ==================
 def redesign_question(question, current_circuit_info, target_language):
     language_instruction = f"Answer in {target_language}."
     prompt = f"""
@@ -487,7 +486,6 @@ if st.button(t["diagnostic_btn"]):
         with st.spinner(t["running_diag"]):
             if uploaded_image and not st.session_state.image_analysis:
                 st.session_state.image_analysis = analyze_circuit_image(uploaded_image)
-            # Identify device type from the image analysis
             st.session_state.device_type = identify_device(st.session_state.image_analysis, t["lang_code"])
             result = diagnose_faults(
                 chip_data=DEFAULT_CHIP_DB,
