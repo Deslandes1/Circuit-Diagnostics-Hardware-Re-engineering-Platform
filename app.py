@@ -100,6 +100,9 @@ LANGUAGES = {
         "diag_complete": "Diagnostic completed.",
         "diagnostic_report": "🩺 Diagnostic Report",
         "device_type": "Device Type",
+        "probe_data_status": "Real probe measurements used",
+        "probe_data_yes": "Yes ✅ – Diagnostic is based on actual hardware readings.",
+        "probe_data_no": "No ⚠️ – No USB probe connected. Diagnostic is a simulation based only on the image. Connect a probe for real diagnosis.",
         "fault_summary": "Fault Summary",
         "actions": "Actions",
         "recommended_tools": "Recommended Tools",
@@ -142,6 +145,9 @@ LANGUAGES = {
         "diag_complete": "Diagnostic terminé.",
         "diagnostic_report": "🩺 Rapport de diagnostic",
         "device_type": "Type d'appareil",
+        "probe_data_status": "Mesures réelles de la sonde utilisées",
+        "probe_data_yes": "Oui ✅ – Le diagnostic est basé sur des lectures matérielles réelles.",
+        "probe_data_no": "Non ⚠️ – Aucune sonde USB connectée. Le diagnostic est une simulation basée uniquement sur l'image. Connectez une sonde pour un diagnostic réel.",
         "fault_summary": "Résumé des pannes",
         "actions": "Actions",
         "recommended_tools": "Outils recommandés",
@@ -184,6 +190,9 @@ LANGUAGES = {
         "diag_complete": "Diagnóstico completado.",
         "diagnostic_report": "🩺 Informe de diagnóstico",
         "device_type": "Tipo de dispositivo",
+        "probe_data_status": "Mediciones reales de la sonda utilizadas",
+        "probe_data_yes": "Sí ✅ – El diagnóstico se basa en lecturas reales del hardware.",
+        "probe_data_no": "No ⚠️ – No hay sonda USB conectada. El diagnóstico es una simulación basada solo en la imagen. Conecte una sonda para un diagnóstico real.",
         "fault_summary": "Resumen de fallos",
         "actions": "Acciones",
         "recommended_tools": "Herramientas recomendadas",
@@ -226,6 +235,9 @@ LANGUAGES = {
         "diag_complete": "Dyagnostik fini.",
         "diagnostic_report": "🩺 Rapò dyagnostik",
         "device_type": "Kalite aparèy",
+        "probe_data_status": "Mezi reyèl sond yo itilize",
+        "probe_data_yes": "Wi ✅ – Dyagnostik la baze sou lekti materyèl reyèl.",
+        "probe_data_no": "Non ⚠️ – Pa gen sond USB konekte. Dyagnostik la se yon simulation ki baze sèlman sou imaj la. Konekte yon sond pou yon dyagnostik reyèl.",
         "fault_summary": "Rezime pwoblèm",
         "actions": "Aksyon",
         "recommended_tools": "Zouti rekòmande",
@@ -332,11 +344,13 @@ Return a JSON with keys:
 # ================== Diagnostic Reasoning ==================
 def diagnose_faults(chip_data, probe_readings, image_analysis, device_type, target_language):
     language_instruction = f"Output the entire JSON in {target_language}. "
+    probe_status = "with real probe measurements" if probe_readings else "WITHOUT any real probe data (simulation mode)"
     prompt = f"""
 You are a hardware diagnostic engineer. Based on the following information, identify which chips are malfunctioning, what is wrong, and what should be done (remove, repair, replace, or rework).
 
 {language_instruction}
 Device Type: {device_type}
+Probe data: {probe_status}
 Image Analysis: {json.dumps(image_analysis, indent=2)}
 Probe Readings (USB): {json.dumps(probe_readings, indent=2)}
 Chip Database (known good values): {json.dumps(chip_data, indent=2)}
@@ -501,6 +515,14 @@ if st.session_state.diagnosis_result:
     st.subheader(t["diagnostic_report"])
     res = st.session_state.diagnosis_result
     st.write(f"**{t['device_type']}:** {st.session_state.device_type}")
+    
+    # Show whether real probe data was used
+    st.write(f"**{t['probe_data_status']}:**")
+    if st.session_state.probe_readings:
+        st.success(t["probe_data_yes"])
+    else:
+        st.warning(t["probe_data_no"])
+    
     st.write(f"**{t['fault_summary']}:** {res.get('fault_summary', 'N/A')}")
     st.write(f"**{t['actions']}:**")
     for act in res.get('actions', []):
