@@ -61,13 +61,13 @@ st.markdown("""
 </style>
 """, unsafe_allow_html=True)
 
-# ================== Translation Dictionary (English only for brevity, but you can add others) ==================
+# ================== Translation Dictionary (English only for brevity) ==================
 LANGUAGES = {
     "English": {
         "app_title": "⚡ Circuit Diagnostics & Hardware Re‑engineering",
         "credit": "built by Gesner Deslandes",
         "caption": "Upload a photo (optional) of a broken circuit board, or enter manual readings. AI will diagnose faults + help you build new hardware.",
-        "sidebar_instructions": "**Instructions**\n1. (Optional) Upload a circuit photo for visual damage detection.\n2. Enter manual readings below (chip name, measured voltage, expected voltage).\n3. Run diagnostic.\n4. Ask AI to redesign new hardware.",
+        "sidebar_instructions": "**Instructions**\n1. (Optional) Upload a circuit photo.\n2. Enter manual readings below (chip name, measured voltage, expected voltage).\n3. Run diagnostic.\n4. Ask AI to redesign new hardware.",
         "usb_title": "🔌 USB Probe (Optional)",
         "select_port": "Select USB Port",
         "connect_btn": "Connect",
@@ -88,7 +88,8 @@ LANGUAGES = {
         "running_diag": "Running AI diagnostics...",
         "diag_complete": "Diagnostic completed.",
         "diagnostic_report": "🩺 Diagnostic Report",
-        "device_type": "Inferred Device Type",
+        "device_type": "Device Type",
+        "manual_device_override": "Manual Device Type Override (if auto-detection fails)",
         "probe_data_status": "Data source",
         "probe_data_yes": "✅ Real probe data ({} measurements)",
         "probe_data_no": "📝 Manual readings only ({} measurements)",
@@ -112,7 +113,6 @@ LANGUAGES = {
         "manual_add_btn": "Add Reading",
         "lang_code": "English"
     }
-    # Add French, Spanish, Creole similarly if needed – copy from previous version
 }
 
 # ================== Groq Setup ==================
@@ -176,21 +176,29 @@ Return as JSON with keys: chips, visible_damage, likely_failed_components, diagn
     except Exception as e:
         return {"error": str(e), "chips": [], "likely_failed_components": "Could not analyze"}
 
-# ================== Device Identification (Corrected for iPhone) ==================
-def identify_device(image_analysis, readings, target_language):
-    # First, try to infer from chip labels in readings (most reliable)
-    chip_labels = [r.get("chip", "").upper() for r in readings if "chip" in r]
+# ================== Device Identification (with manual override) ==================
+def identify_device(image_analysis, readings, manual_override):
+    # If user manually selected a device, use that
+    if manual_override and manual_override != "Auto-detect":
+        return manual_override
+    
+    # Auto-detect from chip labels
+    chip_labels = [r.get("chip", "").upper().strip() for r in readings if "chip" in r]
     all_labels = " ".join(chip_labels)
     
     # iPhone specific chips
-    if any(x in all_labels for x in ["U3600", "U3301", "U3100", "U5600", "U4701", "U6100"]):
+    iphone_chips = ["U3600", "U3301", "U3100", "U5600", "U4701", "U6100", "U4000"]
+    if any(chip in all_labels for chip in iphone_chips):
         return "iPhone 8+ (or similar Apple smartphone)"
-    # Laptop common chips
-    elif any(x in all_labels for x in ["U1", "U2", "U3", "U4", "U5"]) and "U3600" not in all_labels:
+    
+    # Laptop/common motherboard chips (generic)
+    generic_chips = ["U1", "U2", "U3", "U4", "U5", "U6", "U7", "U8"]
+    if any(chip in all_labels for chip in generic_chips):
         return "Generic laptop / desktop motherboard"
-    # If no recognizable chip labels, fall back to image analysis if available
-    elif image_analysis and not image_analysis.get("error"):
-        language_instruction = f"Answer in {target_language}."
+    
+    # Fallback to image analysis if available
+    if image_analysis and not image_analysis.get("error"):
+        language_instruction = "Answer in English."
         prompt = f"""{language_instruction}
 Based on this image analysis, identify the device type (laptop, desktop, tablet, smartphone, etc.). 
 Image analysis: {json.dumps(image_analysis, indent=2)}
@@ -206,8 +214,8 @@ Return JSON with key "device_type".
             return json.loads(response.choices[0].message.content).get("device_type", "Unknown device")
         except:
             return "Unknown device"
-    else:
-        return "Unknown device (no image, no recognizable chip labels)"
+    
+    return "Unknown device (no image, no recognizable chip labels)"
 
 # ================== Diagnostic Reasoning ==================
 def diagnose_faults(chip_data, probe_readings, image_analysis, device_type, target_language):
@@ -280,6 +288,8 @@ if "chat_history" not in st.session_state:
     st.session_state.chat_history = []
 if "lang" not in st.session_state:
     st.session_state.lang = "English"
+if "manual_device_override" not in st.session_state:
+    st.session_state.manual_device_override = "Auto-detect"
 
 # ================== Sidebar ==================
 st.sidebar.title("🌐 Language")
@@ -328,7 +338,11 @@ if st.session_state.probe_connected:
 st.sidebar.markdown("---")
 st.sidebar.info(t["sidebar_instructions"])
 
-# Manual data entry (main method)
+# Manual device override
+device_options = ["Auto-detect", "iPhone 8+", "iPhone X", "Samsung Galaxy", "Laptop", "Desktop", "Tablet", "Other"]
+st.sidebar.selectbox(t["manual_device_override"], device_options, key="manual_device_override")
+
+# Manual data entry
 with st.sidebar.expander(t["manual_add"]):
     manual_chip = st.text_input(t["manual_chip"], key="manual_chip")
     manual_voltage = st.number_input(t["manual_voltage"], value=0.0, step=0.1, key="manual_voltage")
@@ -389,7 +403,7 @@ if st.button(t["diagnostic_btn"]):
             st.session_state.device_type = identify_device(
                 st.session_state.image_analysis,
                 st.session_state.readings,
-                t["lang_code"]
+                st.session_state.manual_device_override
             )
             result = diagnose_faults(
                 chip_data=CHIP_DB,
