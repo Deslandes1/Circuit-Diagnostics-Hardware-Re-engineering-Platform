@@ -20,24 +20,29 @@ st.set_page_config(
     initial_sidebar_state="expanded"
 )
 
-# ================== Styling (Purple Background) ==================
+# ================== Styling (Purple Background, Light Sidebar) ==================
 st.markdown("""
 <style>
-    /* Main app background – purple gradient */
+    /* Main app background – rich purple gradient */
     .stApp {
         background: linear-gradient(135deg, #2d1b69 0%, #5e2a84 100%) !important;
         background-attachment: fixed;
     }
-    /* Sidebar background – same purple */
+    /* Sidebar background – lighter purple (for better white text contrast) */
     [data-testid="stSidebar"], [data-testid="stSidebarUserContent"], section[data-testid="stSidebar"] {
-        background: linear-gradient(135deg, #2d1b69 0%, #5e2a84 100%) !important;
+        background: linear-gradient(135deg, #7c3aed 0%, #a855f7 100%) !important;
         background-attachment: fixed;
     }
-    /* Change all default text to white for contrast */
-    h1, h2, h3, h4, p, label, .stMarkdown, .stSelectbox label, .st-bb, .st-at {
+    /* All text white */
+    h1, h2, h3, h4, p, label, .stMarkdown, .stSelectbox label, .st-bb, .st-at, .stSidebar * {
         color: #ffffff !important;
     }
-    /* Header gradient text */
+    /* Sidebar info box – slightly darker to stand out */
+    .stSidebar .stAlert, .stSidebar .stInfo {
+        background: rgba(0,0,0,0.3) !important;
+        color: white !important;
+    }
+    /* Header gradient */
     .main-header {
         font-size: 2.5rem;
         background: linear-gradient(90deg, #e0aaff, #ff99cc);
@@ -52,19 +57,6 @@ st.markdown("""
         padding: 20px;
         margin: 10px 0;
         border-left: 4px solid #e0aaff;
-    }
-    .fault-badge {
-        background: #ff4b4b;
-        color: white;
-        padding: 4px 12px;
-        border-radius: 20px;
-        font-size: 0.7rem;
-        display: inline-block;
-    }
-    /* Sidebar text and buttons */
-    .stSidebar .stButton button {
-        background-color: #7b2ff7;
-        color: white;
     }
     /* Input fields */
     .stTextInput>div>div>input, .stTextArea>div>div>textarea, .stSelectbox>div>div>div {
@@ -87,7 +79,7 @@ if not GROQ_API_KEY:
     st.stop()
 client = Groq(api_key=GROQ_API_KEY)
 
-# ================== Hardware USB Probe (Mock / Real) ==================
+# ================== Hardware USB Probe ==================
 def list_usb_ports():
     ports = serial.tools.list_ports.comports()
     return [port.device for port in ports]
@@ -141,7 +133,7 @@ Return as JSON with keys: chips, visible_damage, likely_failed_components, diagn
     except Exception as e:
         return {"error": str(e), "chips": [], "likely_failed_components": "Could not analyze"}
 
-# ================== Diagnostic Reasoning (LLM) ==================
+# ================== Diagnostic Reasoning ==================
 def diagnose_faults(chip_data, probe_readings, image_analysis):
     prompt = f"""
 You are a hardware diagnostic engineer. Based on the following information, identify which chips are malfunctioning, what is wrong, and what should be done (remove, repair, replace, or rework).
