@@ -23,17 +23,14 @@ st.set_page_config(
 # ================== Styling ==================
 st.markdown("""
 <style>
-    /* Main app background – purple gradient */
     .stApp {
         background: linear-gradient(135deg, #2d1b69 0%, #5e2a84 100%) !important;
         background-attachment: fixed;
     }
-    /* Sidebar background – lighter purple */
     [data-testid="stSidebar"], [data-testid="stSidebarUserContent"], section[data-testid="stSidebar"] {
         background: linear-gradient(135deg, #7c3aed 0%, #a855f7 100%) !important;
         background-attachment: fixed;
     }
-    /* All text white */
     h1, h2, h3, h4, p, label, .stMarkdown, .stSelectbox label, .st-bb, .st-at, .stSidebar * {
         color: #ffffff !important;
     }
@@ -41,7 +38,6 @@ st.markdown("""
         background: rgba(0,0,0,0.3) !important;
         color: white !important;
     }
-    /* Header gradient */
     .main-header {
         font-size: 2.5rem;
         background: linear-gradient(90deg, #e0aaff, #ff99cc);
@@ -115,7 +111,8 @@ LANGUAGES = {
         "phone": "📱 (509)-47385663",
         "email": "✉️ deslandes78@gmail.com",
         "website": "🌐 GlobalInternet.py",
-        "website_link": "https://globalinternetsitepy-abh7v6tnmskxxnuplrdcgk.streamlit.app/"
+        "website_link": "https://globalinternetsitepy-abh7v6tnmskxxnuplrdcgk.streamlit.app/",
+        "lang_code": "English"
     },
     "French": {
         "app_title": "⚡ Diagnostic de Circuits & Réingénierie Matérielle",
@@ -155,7 +152,8 @@ LANGUAGES = {
         "phone": "📱 (509)-47385663",
         "email": "✉️ deslandes78@gmail.com",
         "website": "🌐 GlobalInternet.py",
-        "website_link": "https://globalinternetsitepy-abh7v6tnmskxxnuplrdcgk.streamlit.app/"
+        "website_link": "https://globalinternetsitepy-abh7v6tnmskxxnuplrdcgk.streamlit.app/",
+        "lang_code": "French"
     },
     "Spanish": {
         "app_title": "⚡ Diagnóstico de Circuitos & Reingeniería de Hardware",
@@ -195,7 +193,8 @@ LANGUAGES = {
         "phone": "📱 (509)-47385663",
         "email": "✉️ deslandes78@gmail.com",
         "website": "🌐 GlobalInternet.py",
-        "website_link": "https://globalinternetsitepy-abh7v6tnmskxxnuplrdcgk.streamlit.app/"
+        "website_link": "https://globalinternetsitepy-abh7v6tnmskxxnuplrdcgk.streamlit.app/",
+        "lang_code": "Spanish"
     },
     "Haitian Creole": {
         "app_title": "⚡ Dyagnostik Sikwi & Re-enjenyèri Materyèl",
@@ -235,7 +234,8 @@ LANGUAGES = {
         "phone": "📱 (509)-47385663",
         "email": "✉️ deslandes78@gmail.com",
         "website": "🌐 GlobalInternet.py",
-        "website_link": "https://globalinternetsitepy-abh7v6tnmskxxnuplrdcgk.streamlit.app/"
+        "website_link": "https://globalinternetsitepy-abh7v6tnmskxxnuplrdcgk.streamlit.app/",
+        "lang_code": "Haitian Creole"
     }
 }
 
@@ -300,19 +300,21 @@ Return as JSON with keys: chips, visible_damage, likely_failed_components, diagn
     except Exception as e:
         return {"error": str(e), "chips": [], "likely_failed_components": "Could not analyze"}
 
-# ================== Diagnostic Reasoning ==================
-def diagnose_faults(chip_data, probe_readings, image_analysis):
+# ================== Diagnostic Reasoning (with language support) ==================
+def diagnose_faults(chip_data, probe_readings, image_analysis, target_language):
+    language_instruction = f"Output the entire JSON in {target_language}. "
     prompt = f"""
 You are a hardware diagnostic engineer. Based on the following information, identify which chips are malfunctioning, what is wrong, and what should be done (remove, repair, replace, or rework).
 
+{language_instruction}
 Image Analysis: {json.dumps(image_analysis, indent=2)}
 Probe Readings (USB): {json.dumps(probe_readings, indent=2)}
 Chip Database (known good values): {json.dumps(chip_data, indent=2)}
 
 Provide output as JSON with keys:
-- "fault_summary": brief description
-- "actions": list of dicts with keys "chip", "fault", "action" (remove/repair/replace), "reason"
-- "recommended_tools": list of tools needed
+- "fault_summary": brief description in {target_language}
+- "actions": list of dicts with keys "chip", "fault", "action" (remove/repair/replace), "reason" (all strings in {target_language})
+- "recommended_tools": list of tool names in {target_language}
 """
     response = client.chat.completions.create(
         model="llama-3.1-8b-instant",
@@ -322,9 +324,11 @@ Provide output as JSON with keys:
     )
     return json.loads(response.choices[0].message.content)
 
-# ================== Hardware Redesign Assistant ==================
-def redesign_question(question, current_circuit_info):
+# ================== Hardware Redesign Assistant (with language support) ==================
+def redesign_question(question, current_circuit_info, target_language):
+    language_instruction = f"Answer in {target_language}."
     prompt = f"""
+{language_instruction}
 You are a hardware re‑engineering expert. The user has a broken circuit board with the following known components and faults:
 {json.dumps(current_circuit_info, indent=2)}
 
@@ -453,7 +457,8 @@ if st.button(t["diagnostic_btn"]):
             result = diagnose_faults(
                 chip_data=DEFAULT_CHIP_DB,
                 probe_readings=st.session_state.probe_readings,
-                image_analysis=st.session_state.image_analysis
+                image_analysis=st.session_state.image_analysis,
+                target_language=t["lang_code"]
             )
             st.session_state.diagnosis_result = result
             st.success(t["diag_complete"])
@@ -489,7 +494,7 @@ if prompt := st.chat_input(t["chat_placeholder"]):
     }
     with st.chat_message("assistant"):
         with st.spinner(t["designing"]):
-            answer = redesign_question(prompt, context)
+            answer = redesign_question(prompt, context, target_language=t["lang_code"])
             st.markdown(answer)
     st.session_state.chat_history.append({"role": "assistant", "content": answer})
 
