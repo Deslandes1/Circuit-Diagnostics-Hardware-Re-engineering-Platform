@@ -99,6 +99,7 @@ LANGUAGES = {
         "running_diag": "Running AI diagnostics...",
         "diag_complete": "Diagnostic completed.",
         "diagnostic_report": "🩺 Diagnostic Report",
+        "device_type": "Device Type",
         "fault_summary": "Fault Summary",
         "actions": "Actions",
         "recommended_tools": "Recommended Tools",
@@ -140,6 +141,7 @@ LANGUAGES = {
         "running_diag": "Diagnostic IA en cours...",
         "diag_complete": "Diagnostic terminé.",
         "diagnostic_report": "🩺 Rapport de diagnostic",
+        "device_type": "Type d'appareil",
         "fault_summary": "Résumé des pannes",
         "actions": "Actions",
         "recommended_tools": "Outils recommandés",
@@ -181,6 +183,7 @@ LANGUAGES = {
         "running_diag": "Ejecutando diagnóstico IA...",
         "diag_complete": "Diagnóstico completado.",
         "diagnostic_report": "🩺 Informe de diagnóstico",
+        "device_type": "Tipo de dispositivo",
         "fault_summary": "Resumen de fallos",
         "actions": "Acciones",
         "recommended_tools": "Herramientas recomendadas",
@@ -222,6 +225,7 @@ LANGUAGES = {
         "running_diag": "Dyagnostik AI ap kouri...",
         "diag_complete": "Dyagnostik fini.",
         "diagnostic_report": "🩺 Rapò dyagnostik",
+        "device_type": "Kalite aparèy",
         "fault_summary": "Rezime pwoblèm",
         "actions": "Aksyon",
         "recommended_tools": "Zouti rekòmande",
@@ -300,13 +304,40 @@ Return as JSON with keys: chips, visible_damage, likely_failed_components, diagn
     except Exception as e:
         return {"error": str(e), "chips": [], "likely_failed_components": "Could not analyze"}
 
+# ================== Device Identification (new) ==================
+def identify_device(image_analysis, target_language):
+    """Use LLM to identify what kind of device the circuit board belongs to (laptop, desktop, tablet, etc.)."""
+    language_instruction = f"Answer in {target_language}."
+    prompt = f"""
+{language_instruction}
+Based on the following circuit board image analysis, identify what type of device this board comes from (e.g., laptop, desktop computer, tablet, smartphone, gaming console, etc.). Also include the brand or model if you can infer.
+
+Image analysis: {json.dumps(image_analysis, indent=2)}
+
+Return a JSON with keys:
+- "device_type": short description (e.g., "Laptop motherboard - Dell Inspiron")
+- "confidence": high/medium/low
+"""
+    try:
+        response = client.chat.completions.create(
+            model="llama-3.1-8b-instant",
+            messages=[{"role": "user", "content": prompt}],
+            temperature=0.2,
+            response_format={"type": "json_object"}
+        )
+        result = json.loads(response.choices[0].message.content)
+        return result.get("device_type", "Unknown device")
+    except Exception:
+        return "Unknown device"
+
 # ================== Diagnostic Reasoning (with language support) ==================
-def diagnose_faults(chip_data, probe_readings, image_analysis, target_language):
+def diagnose_faults(chip_data, probe_readings, image_analysis, device_type, target_language):
     language_instruction = f"Output the entire JSON in {target_language}. "
     prompt = f"""
 You are a hardware diagnostic engineer. Based on the following information, identify which chips are malfunctioning, what is wrong, and what should be done (remove, repair, replace, or rework).
 
 {language_instruction}
+Device Type: {device_type}
 Image Analysis: {json.dumps(image_analysis, indent=2)}
 Probe Readings (USB): {json.dumps(probe_readings, indent=2)}
 Chip Database (known good values): {json.dumps(chip_data, indent=2)}
@@ -368,6 +399,8 @@ if "probe_readings" not in st.session_state:
     st.session_state.probe_readings = []
 if "diagnosis_result" not in st.session_state:
     st.session_state.diagnosis_result = None
+if "device_type" not in st.session_state:
+    st.session_state.device_type = None
 if "chat_history" not in st.session_state:
     st.session_state.chat_history = []
 if "lang" not in st.session_state:
@@ -454,10 +487,13 @@ if st.button(t["diagnostic_btn"]):
         with st.spinner(t["running_diag"]):
             if uploaded_image and not st.session_state.image_analysis:
                 st.session_state.image_analysis = analyze_circuit_image(uploaded_image)
+            # Identify device type from the image analysis
+            st.session_state.device_type = identify_device(st.session_state.image_analysis, t["lang_code"])
             result = diagnose_faults(
                 chip_data=DEFAULT_CHIP_DB,
                 probe_readings=st.session_state.probe_readings,
                 image_analysis=st.session_state.image_analysis,
+                device_type=st.session_state.device_type,
                 target_language=t["lang_code"]
             )
             st.session_state.diagnosis_result = result
@@ -466,6 +502,7 @@ if st.button(t["diagnostic_btn"]):
 if st.session_state.diagnosis_result:
     st.subheader(t["diagnostic_report"])
     res = st.session_state.diagnosis_result
+    st.write(f"**{t['device_type']}:** {st.session_state.device_type}")
     st.write(f"**{t['fault_summary']}:** {res.get('fault_summary', 'N/A')}")
     st.write(f"**{t['actions']}:**")
     for act in res.get('actions', []):
@@ -490,7 +527,8 @@ if prompt := st.chat_input(t["chat_placeholder"]):
         "image_analysis": st.session_state.image_analysis,
         "probe_readings": st.session_state.probe_readings[-10:],
         "diagnosis": st.session_state.diagnosis_result,
-        "available_chips": DEFAULT_CHIP_DB
+        "available_chips": DEFAULT_CHIP_DB,
+        "device_type": st.session_state.device_type
     }
     with st.chat_message("assistant"):
         with st.spinner(t["designing"]):
