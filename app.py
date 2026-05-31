@@ -10,6 +10,7 @@ from groq import Groq
 import requests
 from PIL import Image
 import io
+import pandas as pd
 
 # ================== Page Config ==================
 st.set_page_config(
@@ -161,11 +162,11 @@ Answer in clear, actionable language.
     return response.choices[0].message.content
 
 # ================== Mock Chip Database ==================
-# In real app, load from CSV or Supabase.
+# FIXED: All values are now strings (no syntax error)
 DEFAULT_CHIP_DB = {
-    "U1": {"type": "Voltage Regulator (LM7805)", "pins": {"in": 5-12V, "out": 5V, "gnd": 0V}, "common_faults": ["overheating", "output short"]},
-    "U2": {"type": "Microcontroller (STM32F103)", "pins": {"VDD": 3.3V, "VSS": 0V, "PA9": "TX"}, "common_faults": ["bent pins", "brownout"]},
-    "Q1": {"type": "MOSFET (IRFZ44N)", "pins": {"Gate": 0-5V, "Drain": "12V", "Source": "GND"}, "common_faults": ["shorted gate", "overcurrent"]}
+    "U1": {"type": "Voltage Regulator (LM7805)", "pins": {"in": "5-12V", "out": "5V", "gnd": "0V"}, "common_faults": ["overheating", "output short"]},
+    "U2": {"type": "Microcontroller (STM32F103)", "pins": {"VDD": "3.3V", "VSS": "0V", "PA9": "TX"}, "common_faults": ["bent pins", "brownout"]},
+    "Q1": {"type": "MOSFET (IRFZ44N)", "pins": {"Gate": "0-5V", "Drain": "12V", "Source": "GND"}, "common_faults": ["shorted gate", "overcurrent"]}
 }
 
 # ================== Session State ==================
@@ -203,7 +204,7 @@ if st.sidebar.button("Disconnect"):
     st.sidebar.info("Disconnected")
 
 if st.session_state.probe_connected:
-    # Poll for data (simple loop in Streamlit – better with background thread but this works)
+    # Poll for data (simple loop in Streamlit – works for demo)
     data = read_probe_data(st.session_state.probe_serial)
     if data:
         st.session_state.probe_readings.append(data)
