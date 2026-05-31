@@ -4,13 +4,10 @@ import serial.tools.list_ports
 import json
 import time
 import base64
-import asyncio
-import re
-from groq import Groq
-import requests
-from PIL import Image
 import io
 import pandas as pd
+from groq import Groq
+from PIL import Image
 
 # ================== Page Config ==================
 st.set_page_config(
@@ -52,13 +49,6 @@ st.markdown("""
         margin-top: -0.5rem;
         margin-bottom: 1rem;
     }
-    .diagnostic-card {
-        background: rgba(255,255,255,0.08);
-        border-radius: 16px;
-        padding: 20px;
-        margin: 10px 0;
-        border-left: 4px solid #e0aaff;
-    }
     .stTextInput>div>div>input, .stTextArea>div>div>textarea, .stSelectbox>div>div>div {
         background-color: rgba(255,255,255,0.1) !important;
         color: white !important;
@@ -68,22 +58,16 @@ st.markdown("""
         background-color: rgba(255,255,255,0.1) !important;
         color: white !important;
     }
-    .info-box {
-        background: rgba(0,0,0,0.5);
-        padding: 10px;
-        border-radius: 8px;
-        margin: 10px 0;
-    }
 </style>
 """, unsafe_allow_html=True)
 
-# ================== Translation Dictionary (full) ==================
+# ================== Translation Dictionary ==================
 LANGUAGES = {
     "English": {
         "app_title": "⚡ Circuit Diagnostics & Hardware Re‑engineering",
         "credit": "built by Gesner Deslandes",
-        "caption": "Upload a photo of a broken circuit board, connect USB probe, and let AI diagnose faults + help you build new hardware from the salvageable chips.",
-        "sidebar_instructions": "**Instructions**\n1. Connect your USB probe (Arduino or any device that sends JSON over Serial).\n2. Select the correct COM port below and click Connect.\n3. Your probe MUST send lines like: {\"chip\":\"U1\",\"voltage\":3.3}\n4. Upload a photo of the circuit.\n5. Run diagnostic.",
+        "caption": "Upload a photo of a broken circuit board, connect USB probe, and let AI diagnose faults + help you build new hardware.",
+        "sidebar_instructions": "**Instructions**\n1. Connect a USB probe (Arduino/FTDI) that sends JSON over Serial.\n2. Select the COM port and click Connect.\n3. Your probe must send lines like: {\"chip\":\"U1\",\"voltage\":3.3}\n4. Upload a circuit photo.\n5. Run diagnostic.\n\n**No probe?** You can manually add readings in the sidebar below.",
         "usb_title": "🔌 USB Probe",
         "select_port": "Select USB Port",
         "connect_btn": "Connect",
@@ -108,13 +92,13 @@ LANGUAGES = {
         "device_type": "Device Type",
         "probe_data_status": "Real probe data used",
         "probe_data_yes": "✅ Yes – {} measurements were received from the USB probe.",
-        "probe_data_no": "⚠️ No real probe data was received. Diagnostic is a simulation based only on the image. Please check your USB connection and make sure the probe sends JSON lines.",
+        "probe_data_no": "⚠️ No real probe data was received. Diagnostic is a simulation based only on the image. Connect a real probe or add manual readings below.",
         "fault_summary": "Fault Summary",
         "actions": "Actions",
         "recommended_tools": "Recommended Tools",
         "build_title": "🤖 Build New Hardware from this Board",
         "build_desc": "Ask the AI to redesign the salvageable chips into a completely new device.",
-        "chat_placeholder": "Describe what you want to build",
+        "chat_placeholder": "Describe what you want to build (e.g., 'Make a drone flight controller')",
         "designing": "Designing your new hardware...",
         "footer": "🔧 Built with Streamlit + Groq AI + USB Serial.",
         "sidebar_contact": "📞 Contact",
@@ -122,13 +106,18 @@ LANGUAGES = {
         "email": "✉️ deslandes78@gmail.com",
         "website": "🌐 GlobalInternet.py",
         "website_link": "https://globalinternetsitepy-abh7v6tnmskxxnuplrdcgk.streamlit.app/",
+        "manual_add": "✏️ Manual Probe Data Entry (no hardware)",
+        "manual_chip": "Chip name (e.g., U1)",
+        "manual_voltage": "Voltage (V)",
+        "manual_expected": "Expected voltage (V)",
+        "manual_add_btn": "Add Reading",
         "lang_code": "English"
     },
     "French": {
         "app_title": "⚡ Diagnostic de Circuits & Réingénierie Matérielle",
         "credit": "conçu par Gesner Deslandes",
-        "caption": "Téléchargez une photo d'une carte électronique défectueuse, connectez la sonde USB, et laissez l'IA diagnostiquer les pannes + vous aider à construire un nouveau matériel à partir des puces récupérables.",
-        "sidebar_instructions": "**Instructions**\n1. Connectez votre sonde USB (Arduino ou tout appareil envoyant du JSON sur le port série).\n2. Sélectionnez le bon port COM ci-dessous et cliquez sur Connecter.\n3. Votre sonde DOIT envoyer des lignes comme : {\"chip\":\"U1\",\"voltage\":3.3}\n4. Téléchargez une photo du circuit.\n5. Lancez le diagnostic.",
+        "caption": "Téléchargez une photo d'une carte électronique défectueuse, connectez une sonde USB, et laissez l'IA diagnostiquer les pannes + vous aider à construire un nouveau matériel.",
+        "sidebar_instructions": "**Instructions**\n1. Connectez une sonde USB (Arduino/FTDI) qui envoie du JSON sur le port série.\n2. Sélectionnez le port COM et cliquez sur Connecter.\n3. Votre sonde doit envoyer des lignes comme : {\"chip\":\"U1\",\"voltage\":3.3}\n4. Téléchargez une photo du circuit.\n5. Lancez le diagnostic.\n\n**Pas de sonde ?** Vous pouvez ajouter des lectures manuellement ci-dessous.",
         "usb_title": "🔌 Sonde USB",
         "select_port": "Sélectionnez le port USB",
         "connect_btn": "Connecter",
@@ -153,13 +142,13 @@ LANGUAGES = {
         "device_type": "Type d'appareil",
         "probe_data_status": "Mesures réelles de la sonde utilisées",
         "probe_data_yes": "✅ Oui – {} mesures ont été reçues de la sonde USB.",
-        "probe_data_no": "⚠️ Aucune donnée réelle de la sonde n'a été reçue. Le diagnostic est une simulation basée uniquement sur l'image. Vérifiez votre connexion USB et assurez-vous que la sonde envoie des lignes JSON.",
+        "probe_data_no": "⚠️ Aucune donnée réelle de la sonde n'a été reçue. Le diagnostic est une simulation basée uniquement sur l'image. Connectez une sonde réelle ou ajoutez des lectures manuelles ci-dessous.",
         "fault_summary": "Résumé des pannes",
         "actions": "Actions",
         "recommended_tools": "Outils recommandés",
         "build_title": "🤖 Construire un nouveau matériel à partir de cette carte",
         "build_desc": "Demandez à l'IA de reconcevoir les puces récupérables en un tout nouvel appareil.",
-        "chat_placeholder": "Décrivez ce que vous voulez construire",
+        "chat_placeholder": "Décrivez ce que vous voulez construire (ex: 'Fabrique un contrôleur de drone')",
         "designing": "Conception du nouveau matériel...",
         "footer": "🔧 Construit avec Streamlit + Groq AI + USB Serial.",
         "sidebar_contact": "📞 Contact",
@@ -167,13 +156,18 @@ LANGUAGES = {
         "email": "✉️ deslandes78@gmail.com",
         "website": "🌐 GlobalInternet.py",
         "website_link": "https://globalinternetsitepy-abh7v6tnmskxxnuplrdcgk.streamlit.app/",
+        "manual_add": "✏️ Saisie manuelle des données de sonde (sans matériel)",
+        "manual_chip": "Nom de la puce (ex: U1)",
+        "manual_voltage": "Tension (V)",
+        "manual_expected": "Tension attendue (V)",
+        "manual_add_btn": "Ajouter une lecture",
         "lang_code": "French"
     },
     "Spanish": {
         "app_title": "⚡ Diagnóstico de Circuitos & Reingeniería de Hardware",
         "credit": "construido por Gesner Deslandes",
-        "caption": "Sube una foto de una placa de circuito rota, conecta la sonda USB y deja que la IA diagnostique fallos + te ayude a construir un nuevo hardware a partir de los chips recuperables.",
-        "sidebar_instructions": "**Instrucciones**\n1. Conecte su sonda USB (Arduino o cualquier dispositivo que envíe JSON por Serial).\n2. Seleccione el puerto COM correcto abajo y haga clic en Conectar.\n3. Su sonda DEBE enviar líneas como: {\"chip\":\"U1\",\"voltage\":3.3}\n4. Suba una foto del circuito.\n5. Ejecute el diagnóstico.",
+        "caption": "Sube una foto de una placa de circuito rota, conecta una sonda USB, y deja que la IA diagnostique fallos + te ayude a construir un nuevo hardware.",
+        "sidebar_instructions": "**Instrucciones**\n1. Conecte una sonda USB (Arduino/FTDI) que envíe JSON por Serial.\n2. Seleccione el puerto COM y haga clic en Conectar.\n3. Su sonda DEBE enviar líneas como: {\"chip\":\"U1\",\"voltage\":3.3}\n4. Suba una foto del circuito.\n5. Ejecute el diagnóstico.\n\n**¿Sin sonda?** Puede agregar lecturas manualmente abajo.",
         "usb_title": "🔌 Sonda USB",
         "select_port": "Seleccione el puerto USB",
         "connect_btn": "Conectar",
@@ -198,13 +192,13 @@ LANGUAGES = {
         "device_type": "Tipo de dispositivo",
         "probe_data_status": "Mediciones reales de la sonda utilizadas",
         "probe_data_yes": "✅ Sí – se recibieron {} mediciones de la sonda USB.",
-        "probe_data_no": "⚠️ No se recibieron datos reales de la sonda. El diagnóstico es una simulación basada solo en la imagen. Verifique su conexión USB y asegúrese de que la sonda envíe líneas JSON.",
+        "probe_data_no": "⚠️ No se recibieron datos reales de la sonda. El diagnóstico es una simulación basada solo en la imagen. Conecte una sonda real o agregue lecturas manuales abajo.",
         "fault_summary": "Resumen de fallos",
         "actions": "Acciones",
         "recommended_tools": "Herramientas recomendadas",
         "build_title": "🤖 Construir nuevo hardware desde esta placa",
         "build_desc": "Pida a la IA que rediseñe los chips recuperables en un dispositivo completamente nuevo.",
-        "chat_placeholder": "Describa lo que quiere construir",
+        "chat_placeholder": "Describa lo que quiere construir (ej: 'Haz un controlador de dron')",
         "designing": "Diseñando su nuevo hardware...",
         "footer": "🔧 Construido con Streamlit + Groq AI + USB Serial.",
         "sidebar_contact": "📞 Contacto",
@@ -212,13 +206,18 @@ LANGUAGES = {
         "email": "✉️ deslandes78@gmail.com",
         "website": "🌐 GlobalInternet.py",
         "website_link": "https://globalinternetsitepy-abh7v6tnmskxxnuplrdcgk.streamlit.app/",
+        "manual_add": "✏️ Ingreso manual de datos de sonda (sin hardware)",
+        "manual_chip": "Nombre del chip (ej: U1)",
+        "manual_voltage": "Voltaje (V)",
+        "manual_expected": "Voltaje esperado (V)",
+        "manual_add_btn": "Agregar lectura",
         "lang_code": "Spanish"
     },
     "Haitian Creole": {
         "app_title": "⚡ Dyagnostik Sikwi & Re-enjenyèri Materyèl",
         "credit": "bati pa Gesner Deslandes",
-        "caption": "Chaje yon foto yon sikwi ki kraze, konekte sond USB a, epi kite AI a fè dyagnostik epi ede w konstwi yon nouvo aparèy ak chips ki kapab itilize yo.",
-        "sidebar_instructions": "**Enstriksyon**\n1. Konekte sond USB ou (Arduino oswa nenpòt aparèy ki voye JSON sou Serial).\n2. Chwazi pò USB ki kòrèk la anba epi klike sou Konekte.\n3. Sond ou DWE voye liy tankou: {\"chip\":\"U1\",\"voltage\":3.3}\n4. Chaje yon foto sikwi a.\n5. Kouri dyagnostik la.",
+        "caption": "Chaje yon foto yon sikwi ki kraze, konekte yon sond USB, epi kite AI a fè dyagnostik epi ede w konstwi yon nouvo aparèy.",
+        "sidebar_instructions": "**Enstriksyon**\n1. Konekte yon sond USB (Arduino/FTDI) ki voye JSON sou Serial.\n2. Chwazi pò COM epi klike sou Konekte.\n3. Sond ou DWE voye liy tankou: {\"chip\":\"U1\",\"voltage\":3.3}\n4. Chaje yon foto sikwi a.\n5. Kouri dyagnostik la.\n\n**Pa gen sond?** Ou ka ajoute lekti manyèlman anba a.",
         "usb_title": "🔌 Sond USB",
         "select_port": "Chwazi pò USB",
         "connect_btn": "Konekte",
@@ -243,13 +242,13 @@ LANGUAGES = {
         "device_type": "Kalite aparèy",
         "probe_data_status": "Mezi reyèl sond yo itilize",
         "probe_data_yes": "✅ Wi – {} mezi yo te resevwa nan sond USB la.",
-        "probe_data_no": "⚠️ Pa gen okenn done reyèl sond. Dyagnostik la se yon simulation ki baze sèlman sou imaj la. Tcheke koneksyon USB ou epi asire w sond la voye liy JSON.",
+        "probe_data_no": "⚠️ Pa gen okenn done reyèl sond. Dyagnostik la se yon simulation ki baze sèlman sou imaj la. Konekte yon sond reyèl oswa ajoute lekti manyèl anba a.",
         "fault_summary": "Rezime pwoblèm",
         "actions": "Aksyon",
         "recommended_tools": "Zouti rekòmande",
         "build_title": "🤖 Konstwi nouvo materyèl apati plak sa a",
         "build_desc": "Mande AI a pou l repwenti chips yo nan yon nouvo aparèy.",
-        "chat_placeholder": "Dekri sa w vle konstwi",
+        "chat_placeholder": "Dekri sa w vle konstwi (egzanp: 'Fè yon kontwolè drone')",
         "designing": "Ap desine nouvo materyèl w la...",
         "footer": "🔧 Konstwi ak Streamlit + Groq AI + USB Serial.",
         "sidebar_contact": "📞 Kontak",
@@ -257,6 +256,11 @@ LANGUAGES = {
         "email": "✉️ deslandes78@gmail.com",
         "website": "🌐 GlobalInternet.py",
         "website_link": "https://globalinternetsitepy-abh7v6tnmskxxnuplrdcgk.streamlit.app/",
+        "manual_add": "✏️ Antre Manyèl Done Sond (san materyèl)",
+        "manual_chip": "Non chip (egzanp: U1)",
+        "manual_voltage": "Vòltaj (V)",
+        "manual_expected": "Vòltaj espere (V)",
+        "manual_add_btn": "Ajoute lekti",
         "lang_code": "Haitian Creole"
     }
 }
@@ -264,7 +268,7 @@ LANGUAGES = {
 # ================== Groq Setup ==================
 GROQ_API_KEY = st.secrets.get("GROQ_API_KEY", "")
 if not GROQ_API_KEY:
-    st.error("Missing GROQ_API_KEY in secrets.")
+    st.error("Missing GROQ_API_KEY in secrets. Please add it to deploy.")
     st.stop()
 client = Groq(api_key=GROQ_API_KEY)
 
@@ -291,13 +295,12 @@ def read_probe_data(ser):
             return {"raw": line}
     return None
 
-# ================== Image Analysis (Groq Vision) ==================
+# ================== Image Analysis ==================
 def analyze_circuit_image(uploaded_image):
     img = Image.open(uploaded_image)
     buffered = io.BytesIO()
     img.save(buffered, format="JPEG")
     img_base64 = base64.b64encode(buffered.getvalue()).decode()
-    
     prompt = """You are a circuit board expert. Analyze this PCB image and:
 1. List all major ICs/chips you can identify.
 2. Note any visible damage.
@@ -317,17 +320,15 @@ Return as JSON with keys: chips, visible_damage, likely_failed_components, diagn
             temperature=0.2,
             response_format={"type": "json_object"}
         )
-        result = json.loads(response.choices[0].message.content)
-        return result
+        return json.loads(response.choices[0].message.content)
     except Exception as e:
         return {"error": str(e), "chips": [], "likely_failed_components": "Could not analyze"}
 
 # ================== Device Identification ==================
 def identify_device(image_analysis, target_language):
     language_instruction = f"Answer in {target_language}."
-    prompt = f"""
-{language_instruction}
-Based on the following circuit board image analysis, identify what type of device this board comes from (laptop, desktop, tablet, etc.). Include brand if possible.
+    prompt = f"""{language_instruction}
+Based on this image analysis, identify the device type (laptop, desktop, tablet, etc.) and brand if possible.
 Image analysis: {json.dumps(image_analysis, indent=2)}
 Return JSON with key "device_type".
 """
@@ -338,23 +339,23 @@ Return JSON with key "device_type".
             temperature=0.2,
             response_format={"type": "json_object"}
         )
-        result = json.loads(response.choices[0].message.content)
-        return result.get("device_type", "Unknown device")
+        return json.loads(response.choices[0].message.content).get("device_type", "Unknown device")
     except Exception:
         return "Unknown device"
 
-# ================== Diagnostic Reasoning (corrected with escaped braces) ==================
+# ================== Diagnostic Reasoning ==================
 def diagnose_faults(chip_data, probe_readings, image_analysis, device_type, target_language):
     language_instruction = f"Output JSON in {target_language}."
-    # Escape curly braces by doubling them
-    prompt = f"""
-{language_instruction}
+    prompt = f"""{language_instruction}
 Device Type: {device_type}
-Probe Readings (USB): {json.dumps(probe_readings, indent=2)}
+Probe Readings: {json.dumps(probe_readings, indent=2)}
 Image Analysis: {json.dumps(image_analysis, indent=2)}
 Chip Database: {json.dumps(chip_data, indent=2)}
 
-Return JSON with keys: "fault_summary", "actions" (list of objects with keys "chip", "fault", "action", "reason"), "recommended_tools".
+Return JSON with keys:
+- "fault_summary": string
+- "actions": list of objects with keys "chip", "fault", "action", "reason"
+- "recommended_tools": list of strings
 """
     response = client.chat.completions.create(
         model="llama-3.1-8b-instant",
@@ -364,14 +365,13 @@ Return JSON with keys: "fault_summary", "actions" (list of objects with keys "ch
     )
     return json.loads(response.choices[0].message.content)
 
-# ================== Hardware Redesign Assistant ==================
-def redesign_question(question, current_circuit_info, target_language):
+# ================== Redesign Assistant ==================
+def redesign_question(question, context, target_language):
     language_instruction = f"Answer in {target_language}."
-    prompt = f"""
-{language_instruction}
-The user has a broken board with: {json.dumps(current_circuit_info, indent=2)}
-Question: "{question}"
-Suggest reuse of chips, new components, wiring, and firmware.
+    prompt = f"""{language_instruction}
+The user has a broken board with this information: {json.dumps(context, indent=2)}
+They ask: "{question}"
+Suggest which chips can be reused, new components, wiring, and firmware.
 """
     response = client.chat.completions.create(
         model="llama-3.1-8b-instant",
@@ -423,7 +423,7 @@ if ports:
     selected_port = st.sidebar.selectbox(t["select_port"], options=list(port_options.keys()), format_func=lambda x: port_options[x])
 else:
     selected_port = None
-    st.sidebar.warning("No USB ports detected. Plug in your probe and refresh.")
+    st.sidebar.warning("No USB ports detected. Plug in a real Arduino/FTDI device and refresh.")
 
 if st.sidebar.button(t["connect_btn"], disabled=st.session_state.probe_connected):
     if selected_port:
@@ -441,7 +441,6 @@ if st.sidebar.button(t["disconnect_btn"]):
     st.session_state.probe_serial = None
     st.sidebar.info(t["disconnected"])
 
-# Try to read data if connected
 if st.session_state.probe_connected:
     data = read_probe_data(st.session_state.probe_serial)
     if data:
@@ -449,10 +448,26 @@ if st.session_state.probe_connected:
         st.sidebar.write(t["last_reading"].format(data))
         st.sidebar.success("✅ Receiving data!")
     else:
-        st.sidebar.warning("⏳ Waiting for data... Make sure your probe is sending JSON lines.")
+        st.sidebar.warning("⏳ Waiting for data... Ensure probe is sending JSON lines.")
 
 st.sidebar.markdown("---")
 st.sidebar.info(t["sidebar_instructions"])
+
+# Manual data entry (for users without hardware)
+with st.sidebar.expander(t["manual_add"]):
+    manual_chip = st.text_input(t["manual_chip"], key="manual_chip")
+    manual_voltage = st.number_input(t["manual_voltage"], value=0.0, step=0.1, key="manual_voltage")
+    manual_expected = st.number_input(t["manual_expected"], value=0.0, step=0.1, key="manual_expected")
+    if st.button(t["manual_add_btn"]):
+        if manual_chip:
+            st.session_state.probe_readings.append({
+                "chip": manual_chip,
+                "voltage": manual_voltage,
+                "expected": manual_expected
+            })
+            st.sidebar.success(f"Added reading for {manual_chip}")
+            st.rerun()
+
 st.sidebar.markdown("---")
 st.sidebar.subheader(t["sidebar_contact"])
 st.sidebar.write(t["phone"])
@@ -511,14 +526,11 @@ if st.session_state.diagnosis_result:
     st.subheader(t["diagnostic_report"])
     res = st.session_state.diagnosis_result
     st.write(f"**{t['device_type']}:** {st.session_state.device_type}")
-    
-    # Real probe data indicator
     st.write(f"**{t['probe_data_status']}:**")
     if st.session_state.probe_readings:
         st.success(t["probe_data_yes"].format(len(st.session_state.probe_readings)))
     else:
         st.warning(t["probe_data_no"])
-    
     st.write(f"**{t['fault_summary']}:** {res.get('fault_summary', 'N/A')}")
     st.write(f"**{t['actions']}:**")
     for act in res.get('actions', []):
@@ -538,17 +550,15 @@ if prompt := st.chat_input(t["chat_placeholder"]):
     st.session_state.chat_history.append({"role": "user", "content": prompt})
     with st.chat_message("user"):
         st.markdown(prompt)
-    
     context = {
         "image_analysis": st.session_state.image_analysis,
         "probe_readings": st.session_state.probe_readings[-10:],
         "diagnosis": st.session_state.diagnosis_result,
-        "available_chips": DEFAULT_CHIP_DB,
         "device_type": st.session_state.device_type
     }
     with st.chat_message("assistant"):
         with st.spinner(t["designing"]):
-            answer = redesign_question(prompt, context, target_language=t["lang_code"])
+            answer = redesign_question(prompt, context, t["lang_code"])
             st.markdown(answer)
     st.session_state.chat_history.append({"role": "assistant", "content": answer})
 
