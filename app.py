@@ -20,15 +20,15 @@ st.set_page_config(
     initial_sidebar_state="expanded"
 )
 
-# ================== Styling (Purple Background, Light Sidebar) ==================
+# ================== Styling ==================
 st.markdown("""
 <style>
-    /* Main app background – rich purple gradient */
+    /* Main app background – purple gradient */
     .stApp {
         background: linear-gradient(135deg, #2d1b69 0%, #5e2a84 100%) !important;
         background-attachment: fixed;
     }
-    /* Sidebar background – lighter purple (for better white text contrast) */
+    /* Sidebar background – lighter purple for better white text contrast */
     [data-testid="stSidebar"], [data-testid="stSidebarUserContent"], section[data-testid="stSidebar"] {
         background: linear-gradient(135deg, #7c3aed 0%, #a855f7 100%) !important;
         background-attachment: fixed;
@@ -104,6 +104,8 @@ def read_probe_data(ser):
 
 # ================== Image Analysis (Groq Vision) ==================
 def analyze_circuit_image(uploaded_image):
+    """Send image to Groq's vision model (Llama 4 Scout) to identify chips and possible faults."""
+    # Convert PIL image to base64
     img = Image.open(uploaded_image)
     buffered = io.BytesIO()
     img.save(buffered, format="JPEG")
@@ -117,8 +119,9 @@ def analyze_circuit_image(uploaded_image):
 Return as JSON with keys: chips, visible_damage, likely_failed_components, diagnostic_plan.
 """
     try:
+        # Using the current production vision model: Llama 4 Scout
         response = client.chat.completions.create(
-            model="llama-3.2-11b-vision-preview",
+            model="meta-llama/llama-4-scout-17b-16e-instruct",
             messages=[
                 {"role": "user", "content": [
                     {"type": "text", "text": prompt},
