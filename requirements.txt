@@ -1,0 +1,6 @@
+streamlit
+groq
+pyserial
+pillow
+pandas
+requests
