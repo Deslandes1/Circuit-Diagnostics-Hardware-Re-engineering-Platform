@@ -61,13 +61,13 @@ st.markdown("""
 </style>
 """, unsafe_allow_html=True)
 
-# ================== Translation Dictionary ==================
+# ================== Translation Dictionary (full, same as before) ==================
 LANGUAGES = {
     "English": {
         "app_title": "⚡ Circuit Diagnostics & Hardware Re‑engineering",
         "credit": "built by Gesner Deslandes",
-        "caption": "Upload a photo of a broken circuit board, connect USB probe, and let AI diagnose faults + help you build new hardware.",
-        "sidebar_instructions": "**Instructions**\n1. Connect a USB probe (Arduino/FTDI) that sends JSON over Serial.\n2. Select the COM port and click Connect.\n3. Your probe must send lines like: {\"chip\":\"U1\",\"voltage\":3.3}\n4. Upload a circuit photo.\n5. Run diagnostic.\n\n**No probe?** You can manually add readings in the sidebar below.",
+        "caption": "Upload a photo (optional) of a broken circuit board, connect USB probe or enter manual readings. AI will diagnose faults + help you build new hardware.",
+        "sidebar_instructions": "**Instructions**\n1. (Optional) Upload a circuit photo for visual damage detection.\n2. Connect a USB probe (Arduino/FTDI) that sends JSON over Serial, OR enter manual readings below.\n3. Run diagnostic.\n4. Ask AI to redesign new hardware.",
         "usb_title": "🔌 USB Probe",
         "select_port": "Select USB Port",
         "connect_btn": "Connect",
@@ -76,23 +76,23 @@ LANGUAGES = {
         "failed_connect": "Failed to connect",
         "disconnected": "Disconnected",
         "last_reading": "Last reading: {}",
-        "image_upload": "📸 Circuit Image Upload",
-        "upload_label": "Take a picture of the waste circuit",
+        "image_upload": "📸 Circuit Image Upload (Optional)",
+        "upload_label": "Take a picture of the circuit (optional)",
         "analyze_btn": "🔍 Analyze Image with AI",
         "analyzing": "Analyzing image (Groq Vision)...",
         "analysis_complete": "Analysis complete",
-        "probe_readings_title": "📊 Probe Readings (USB)",
+        "probe_readings_title": "📊 Probe / Manual Readings",
         "clear_readings_btn": "Clear Readings",
-        "no_data": "No data received yet. Make sure your probe is sending JSON lines.",
-        "diagnostic_btn": "🚀 Run Full Diagnostic (Image + Probe)",
-        "upload_first": "Please upload an image first.",
+        "no_data": "No readings yet. Add manual readings below or connect a USB probe.",
+        "diagnostic_btn": "🚀 Run Full Diagnostic",
+        "upload_first": "Please upload an image OR add some manual readings first.",
         "running_diag": "Running AI diagnostics...",
         "diag_complete": "Diagnostic completed.",
         "diagnostic_report": "🩺 Diagnostic Report",
-        "device_type": "Device Type",
+        "device_type": "Inferred Device Type",
         "probe_data_status": "Real probe data used",
-        "probe_data_yes": "✅ Yes – {} measurements were received from the USB probe.",
-        "probe_data_no": "⚠️ No real probe data was received. Diagnostic is a simulation based only on the image. Connect a real probe or add manual readings below.",
+        "probe_data_yes": "✅ Yes – {} measurements were received.",
+        "probe_data_no": "⚠️ No real probe data. Using manual entries only.",
         "fault_summary": "Fault Summary",
         "actions": "Actions",
         "recommended_tools": "Recommended Tools",
@@ -107,7 +107,7 @@ LANGUAGES = {
         "website": "🌐 GlobalInternet.py",
         "website_link": "https://globalinternetsitepy-abh7v6tnmskxxnuplrdcgk.streamlit.app/",
         "manual_add": "✏️ Manual Probe Data Entry (no hardware)",
-        "manual_chip": "Chip name (e.g., U1)",
+        "manual_chip": "Chip name (e.g., U3600)",
         "manual_voltage": "Voltage (V)",
         "manual_expected": "Expected voltage (V)",
         "manual_add_btn": "Add Reading",
@@ -116,8 +116,8 @@ LANGUAGES = {
     "French": {
         "app_title": "⚡ Diagnostic de Circuits & Réingénierie Matérielle",
         "credit": "conçu par Gesner Deslandes",
-        "caption": "Téléchargez une photo d'une carte électronique défectueuse, connectez une sonde USB, et laissez l'IA diagnostiquer les pannes + vous aider à construire un nouveau matériel.",
-        "sidebar_instructions": "**Instructions**\n1. Connectez une sonde USB (Arduino/FTDI) qui envoie du JSON sur le port série.\n2. Sélectionnez le port COM et cliquez sur Connecter.\n3. Votre sonde doit envoyer des lignes comme : {\"chip\":\"U1\",\"voltage\":3.3}\n4. Téléchargez une photo du circuit.\n5. Lancez le diagnostic.\n\n**Pas de sonde ?** Vous pouvez ajouter des lectures manuellement ci-dessous.",
+        "caption": "Téléchargez une photo (facultative) d'une carte électronique, connectez une sonde USB ou entrez des lectures manuelles. L'IA diagnostiquera les pannes + vous aidera à construire un nouveau matériel.",
+        "sidebar_instructions": "**Instructions**\n1. (Optionnel) Téléchargez une photo pour la détection des dommages visuels.\n2. Connectez une sonde USB (Arduino/FTDI) qui envoie du JSON, OU entrez des lectures manuelles ci-dessous.\n3. Lancez le diagnostic.\n4. Demandez à l'IA de reconcevoir un nouveau matériel.",
         "usb_title": "🔌 Sonde USB",
         "select_port": "Sélectionnez le port USB",
         "connect_btn": "Connecter",
@@ -126,23 +126,23 @@ LANGUAGES = {
         "failed_connect": "Échec de la connexion",
         "disconnected": "Déconnecté",
         "last_reading": "Dernière lecture : {}",
-        "image_upload": "📸 Téléchargement de l'image du circuit",
-        "upload_label": "Prenez une photo du circuit défectueux",
+        "image_upload": "📸 Téléchargement de l'image du circuit (Optionnel)",
+        "upload_label": "Prenez une photo du circuit (optionnel)",
         "analyze_btn": "🔍 Analyser l'image avec l'IA",
         "analyzing": "Analyse de l'image (Groq Vision)...",
         "analysis_complete": "Analyse terminée",
-        "probe_readings_title": "📊 Lectures de la sonde (USB)",
+        "probe_readings_title": "📊 Lectures (sonde / manuelles)",
         "clear_readings_btn": "Effacer les lectures",
-        "no_data": "Pas encore de données. Assurez-vous que votre sonde envoie des lignes JSON.",
-        "diagnostic_btn": "🚀 Exécuter le diagnostic complet (Image + Sonde)",
-        "upload_first": "Veuillez d'abord télécharger une image.",
+        "no_data": "Pas encore de lectures. Ajoutez des lectures manuelles ou connectez une sonde USB.",
+        "diagnostic_btn": "🚀 Exécuter le diagnostic complet",
+        "upload_first": "Veuillez télécharger une image ou ajouter des lectures manuelles.",
         "running_diag": "Diagnostic IA en cours...",
         "diag_complete": "Diagnostic terminé.",
         "diagnostic_report": "🩺 Rapport de diagnostic",
-        "device_type": "Type d'appareil",
+        "device_type": "Type d'appareil déduit",
         "probe_data_status": "Mesures réelles de la sonde utilisées",
-        "probe_data_yes": "✅ Oui – {} mesures ont été reçues de la sonde USB.",
-        "probe_data_no": "⚠️ Aucune donnée réelle de la sonde n'a été reçue. Le diagnostic est une simulation basée uniquement sur l'image. Connectez une sonde réelle ou ajoutez des lectures manuelles ci-dessous.",
+        "probe_data_yes": "✅ Oui – {} mesures ont été reçues.",
+        "probe_data_no": "⚠️ Aucune donnée réelle. Utilisation des entrées manuelles uniquement.",
         "fault_summary": "Résumé des pannes",
         "actions": "Actions",
         "recommended_tools": "Outils recommandés",
@@ -156,8 +156,8 @@ LANGUAGES = {
         "email": "✉️ deslandes78@gmail.com",
         "website": "🌐 GlobalInternet.py",
         "website_link": "https://globalinternetsitepy-abh7v6tnmskxxnuplrdcgk.streamlit.app/",
-        "manual_add": "✏️ Saisie manuelle des données de sonde (sans matériel)",
-        "manual_chip": "Nom de la puce (ex: U1)",
+        "manual_add": "✏️ Saisie manuelle des données (sans matériel)",
+        "manual_chip": "Nom de la puce (ex: U3600)",
         "manual_voltage": "Tension (V)",
         "manual_expected": "Tension attendue (V)",
         "manual_add_btn": "Ajouter une lecture",
@@ -166,8 +166,8 @@ LANGUAGES = {
     "Spanish": {
         "app_title": "⚡ Diagnóstico de Circuitos & Reingeniería de Hardware",
         "credit": "construido por Gesner Deslandes",
-        "caption": "Sube una foto de una placa de circuito rota, conecta una sonda USB, y deja que la IA diagnostique fallos + te ayude a construir un nuevo hardware.",
-        "sidebar_instructions": "**Instrucciones**\n1. Conecte una sonda USB (Arduino/FTDI) que envíe JSON por Serial.\n2. Seleccione el puerto COM y haga clic en Conectar.\n3. Su sonda DEBE enviar líneas como: {\"chip\":\"U1\",\"voltage\":3.3}\n4. Suba una foto del circuito.\n5. Ejecute el diagnóstico.\n\n**¿Sin sonda?** Puede agregar lecturas manualmente abajo.",
+        "caption": "Sube una foto (opcional) de una placa rota, conecta una sonda USB o ingresa lecturas manuales. La IA diagnosticará fallos + te ayudará a construir nuevo hardware.",
+        "sidebar_instructions": "**Instrucciones**\n1. (Opcional) Sube una foto para detección visual de daños.\n2. Conecta una sonda USB (Arduino/FTDI) que envíe JSON, O ingresa lecturas manuales abajo.\n3. Ejecuta el diagnóstico.\n4. Pide a la IA que rediseñe un nuevo hardware.",
         "usb_title": "🔌 Sonda USB",
         "select_port": "Seleccione el puerto USB",
         "connect_btn": "Conectar",
@@ -176,23 +176,23 @@ LANGUAGES = {
         "failed_connect": "Error de conexión",
         "disconnected": "Desconectado",
         "last_reading": "Última lectura: {}",
-        "image_upload": "📸 Subir imagen del circuito",
-        "upload_label": "Tome una foto del circuito defectuoso",
+        "image_upload": "📸 Subir imagen del circuito (Opcional)",
+        "upload_label": "Tome una foto del circuito (opcional)",
         "analyze_btn": "🔍 Analizar imagen con IA",
         "analyzing": "Analizando imagen (Groq Vision)...",
         "analysis_complete": "Análisis completo",
-        "probe_readings_title": "📊 Lecturas de la sonda (USB)",
+        "probe_readings_title": "📊 Lecturas (sonda / manuales)",
         "clear_readings_btn": "Borrar lecturas",
-        "no_data": "Aún no hay datos. Asegúrese de que su sonda esté enviando líneas JSON.",
-        "diagnostic_btn": "🚀 Ejecutar diagnóstico completo (Imagen + Sonda)",
-        "upload_first": "Primero suba una imagen.",
+        "no_data": "Aún no hay lecturas. Agregue lecturas manuales o conecte una sonda USB.",
+        "diagnostic_btn": "🚀 Ejecutar diagnóstico completo",
+        "upload_first": "Suba una imagen o agregue lecturas manuales primero.",
         "running_diag": "Ejecutando diagnóstico IA...",
         "diag_complete": "Diagnóstico completado.",
         "diagnostic_report": "🩺 Informe de diagnóstico",
-        "device_type": "Tipo de dispositivo",
+        "device_type": "Tipo de dispositivo inferido",
         "probe_data_status": "Mediciones reales de la sonda utilizadas",
-        "probe_data_yes": "✅ Sí – se recibieron {} mediciones de la sonda USB.",
-        "probe_data_no": "⚠️ No se recibieron datos reales de la sonda. El diagnóstico es una simulación basada solo en la imagen. Conecte una sonda real o agregue lecturas manuales abajo.",
+        "probe_data_yes": "✅ Sí – se recibieron {} mediciones.",
+        "probe_data_no": "⚠️ No se recibieron datos reales. Usando solo entradas manuales.",
         "fault_summary": "Resumen de fallos",
         "actions": "Acciones",
         "recommended_tools": "Herramientas recomendadas",
@@ -206,8 +206,8 @@ LANGUAGES = {
         "email": "✉️ deslandes78@gmail.com",
         "website": "🌐 GlobalInternet.py",
         "website_link": "https://globalinternetsitepy-abh7v6tnmskxxnuplrdcgk.streamlit.app/",
-        "manual_add": "✏️ Ingreso manual de datos de sonda (sin hardware)",
-        "manual_chip": "Nombre del chip (ej: U1)",
+        "manual_add": "✏️ Ingreso manual de datos (sin hardware)",
+        "manual_chip": "Nombre del chip (ej: U3600)",
         "manual_voltage": "Voltaje (V)",
         "manual_expected": "Voltaje esperado (V)",
         "manual_add_btn": "Agregar lectura",
@@ -216,8 +216,8 @@ LANGUAGES = {
     "Haitian Creole": {
         "app_title": "⚡ Dyagnostik Sikwi & Re-enjenyèri Materyèl",
         "credit": "bati pa Gesner Deslandes",
-        "caption": "Chaje yon foto yon sikwi ki kraze, konekte yon sond USB, epi kite AI a fè dyagnostik epi ede w konstwi yon nouvo aparèy.",
-        "sidebar_instructions": "**Enstriksyon**\n1. Konekte yon sond USB (Arduino/FTDI) ki voye JSON sou Serial.\n2. Chwazi pò COM epi klike sou Konekte.\n3. Sond ou DWE voye liy tankou: {\"chip\":\"U1\",\"voltage\":3.3}\n4. Chaje yon foto sikwi a.\n5. Kouri dyagnostik la.\n\n**Pa gen sond?** Ou ka ajoute lekti manyèlman anba a.",
+        "caption": "Chaje yon foto (si ou vle) yon sikwi ki kraze, konekte sond USB oswa antre lekti manyèl. AI ap fè dyagnostik + ede w konstwi nouvo aparèy.",
+        "sidebar_instructions": "**Enstriksyon**\n1. (Opsyonèl) Chaje yon foto pou deteksyon domaj vizyèl.\n2. Konekte yon sond USB ki voye JSON, OSWA antre lekti manyèl anba a.\n3. Kouri dyagnostik la.\n4. Mande AI a pou l repwenti yon nouvo aparèy.",
         "usb_title": "🔌 Sond USB",
         "select_port": "Chwazi pò USB",
         "connect_btn": "Konekte",
@@ -226,23 +226,23 @@ LANGUAGES = {
         "failed_connect": "Echèk koneksyon",
         "disconnected": "Dekonekte",
         "last_reading": "Dènye lekti: {}",
-        "image_upload": "📸 Chaje imaj sikwi a",
-        "upload_label": "Pran yon foto sikwi a",
+        "image_upload": "📸 Chaje imaj sikwi a (Opsyonèl)",
+        "upload_label": "Pran yon foto sikwi a (si ou vle)",
         "analyze_btn": "🔍 Analize imaj ak AI",
         "analyzing": "Analiz imaj (Groq Vision)...",
         "analysis_complete": "Analiz fini",
-        "probe_readings_title": "📊 Lekti sond (USB)",
+        "probe_readings_title": "📊 Lekti (sond / manyèl)",
         "clear_readings_btn": "Efase lekti yo",
-        "no_data": "Pa gen done ankò. Asire w sond ou ap voye liy JSON.",
-        "diagnostic_btn": "🚀 Kouri dyagnostik konplè (Imaj + Sond)",
-        "upload_first": "Tanpri chaje yon foto anvan.",
+        "no_data": "Pa gen lekti ankò. Ajoute lekti manyèl oswa konekte yon sond USB.",
+        "diagnostic_btn": "🚀 Kouri dyagnostik konplè",
+        "upload_first": "Tanpri chaje yon foto oswa ajoute lekti manyèl anvan.",
         "running_diag": "Dyagnostik AI ap kouri...",
         "diag_complete": "Dyagnostik fini.",
         "diagnostic_report": "🩺 Rapò dyagnostik",
-        "device_type": "Kalite aparèy",
+        "device_type": "Kalite aparèy dedui",
         "probe_data_status": "Mezi reyèl sond yo itilize",
-        "probe_data_yes": "✅ Wi – {} mezi yo te resevwa nan sond USB la.",
-        "probe_data_no": "⚠️ Pa gen okenn done reyèl sond. Dyagnostik la se yon simulation ki baze sèlman sou imaj la. Konekte yon sond reyèl oswa ajoute lekti manyèl anba a.",
+        "probe_data_yes": "✅ Wi – {} mezi yo te resevwa.",
+        "probe_data_no": "⚠️ Pa gen done reyèl. Sèlman lekti manyèl.",
         "fault_summary": "Rezime pwoblèm",
         "actions": "Aksyon",
         "recommended_tools": "Zouti rekòmande",
@@ -256,8 +256,8 @@ LANGUAGES = {
         "email": "✉️ deslandes78@gmail.com",
         "website": "🌐 GlobalInternet.py",
         "website_link": "https://globalinternetsitepy-abh7v6tnmskxxnuplrdcgk.streamlit.app/",
-        "manual_add": "✏️ Antre Manyèl Done Sond (san materyèl)",
-        "manual_chip": "Non chip (egzanp: U1)",
+        "manual_add": "✏️ Antre Manyèl Done (san materyèl)",
+        "manual_chip": "Non chip (egzanp: U3600)",
         "manual_voltage": "Vòltaj (V)",
         "manual_expected": "Vòltaj espere (V)",
         "manual_add_btn": "Ajoute lekti",
@@ -268,7 +268,7 @@ LANGUAGES = {
 # ================== Groq Setup ==================
 GROQ_API_KEY = st.secrets.get("GROQ_API_KEY", "")
 if not GROQ_API_KEY:
-    st.error("Missing GROQ_API_KEY in secrets. Please add it to deploy.")
+    st.error("Missing GROQ_API_KEY in secrets.")
     st.stop()
 client = Groq(api_key=GROQ_API_KEY)
 
@@ -295,8 +295,10 @@ def read_probe_data(ser):
             return {"raw": line}
     return None
 
-# ================== Image Analysis ==================
+# ================== Image Analysis (Optional) ==================
 def analyze_circuit_image(uploaded_image):
+    if uploaded_image is None:
+        return None
     img = Image.open(uploaded_image)
     buffered = io.BytesIO()
     img.save(buffered, format="JPEG")
@@ -324,32 +326,45 @@ Return as JSON with keys: chips, visible_damage, likely_failed_components, diagn
     except Exception as e:
         return {"error": str(e), "chips": [], "likely_failed_components": "Could not analyze"}
 
-# ================== Device Identification ==================
-def identify_device(image_analysis, target_language):
-    language_instruction = f"Answer in {target_language}."
-    prompt = f"""{language_instruction}
-Based on this image analysis, identify the device type (laptop, desktop, tablet, etc.) and brand if possible.
+# ================== Device Identification (Optional) ==================
+def identify_device(image_analysis, readings, target_language):
+    # If image analysis exists, use it. Otherwise, guess from chip labels.
+    if image_analysis and not image_analysis.get("error"):
+        language_instruction = f"Answer in {target_language}."
+        prompt = f"""{language_instruction}
+Based on this image analysis, identify the device type (laptop, desktop, tablet, smartphone, etc.) and brand if possible.
 Image analysis: {json.dumps(image_analysis, indent=2)}
 Return JSON with key "device_type".
 """
-    try:
-        response = client.chat.completions.create(
-            model="llama-3.1-8b-instant",
-            messages=[{"role": "user", "content": prompt}],
-            temperature=0.2,
-            response_format={"type": "json_object"}
-        )
-        return json.loads(response.choices[0].message.content).get("device_type", "Unknown device")
-    except Exception:
-        return "Unknown device"
+        try:
+            response = client.chat.completions.create(
+                model="llama-3.1-8b-instant",
+                messages=[{"role": "user", "content": prompt}],
+                temperature=0.2,
+                response_format={"type": "json_object"}
+            )
+            return json.loads(response.choices[0].message.content).get("device_type", "Unknown device")
+        except:
+            pass
+    # If no image, infer from chip labels in readings
+    chip_labels = [r.get("chip", "") for r in readings if "chip" in r]
+    all_labels = " ".join(chip_labels).upper()
+    if any(x in all_labels for x in ["U3600", "U3301", "U3100", "U5600"]):
+        return "iPhone 8+ (or similar Apple smartphone)"
+    elif any(x in all_labels for x in ["U1", "U2", "U3"]):
+        return "Generic circuit board (unknown device)"
+    else:
+        return "Unknown device (no image, cannot determine)"
 
 # ================== Diagnostic Reasoning ==================
 def diagnose_faults(chip_data, probe_readings, image_analysis, device_type, target_language):
     language_instruction = f"Output JSON in {target_language}."
+    # Use image analysis if available, else empty dict
+    img_info = image_analysis if image_analysis and not image_analysis.get("error") else {"chips": [], "visible_damage": [], "likely_failed_components": []}
     prompt = f"""{language_instruction}
 Device Type: {device_type}
-Probe Readings: {json.dumps(probe_readings, indent=2)}
-Image Analysis: {json.dumps(image_analysis, indent=2)}
+Probe/Manual Readings: {json.dumps(probe_readings, indent=2)}
+Image Analysis (if any): {json.dumps(img_info, indent=2)}
 Chip Database: {json.dumps(chip_data, indent=2)}
 
 Return JSON with keys:
@@ -383,6 +398,10 @@ Suggest which chips can be reused, new components, wiring, and firmware.
 
 # ================== Mock Chip Database ==================
 DEFAULT_CHIP_DB = {
+    "U3600": {"type": "PMIC (Power Management)", "pins": {"VBATT": "3.8V", "VDD_MAIN": "3.8V"}, "common_faults": ["overheating", "short"]},
+    "U3301": {"type": "NAND Flash", "pins": {"VDD_NAND": "1.8V"}, "common_faults": ["dead", "no power"]},
+    "U3100": {"type": "A11 Bionic CPU", "pins": {"VCC_MAIN": "3.8V"}, "common_faults": ["shorted capacitor", "dead CPU"]},
+    "U5600": {"type": "USB/Charging IC", "pins": {"V_BUS": "5V", "VBATT": "3.8V"}, "common_faults": ["overvoltage", "no charging"]},
     "U1": {"type": "Voltage Regulator (LM7805)", "pins": {"in": "5-12V", "out": "5V", "gnd": "0V"}, "common_faults": ["overheating", "output short"]},
     "U2": {"type": "Microcontroller (STM32F103)", "pins": {"VDD": "3.3V", "VSS": "0V", "PA9": "TX"}, "common_faults": ["bent pins", "brownout"]},
     "Q1": {"type": "MOSFET (IRFZ44N)", "pins": {"Gate": "0-5V", "Drain": "12V", "Source": "GND"}, "common_faults": ["shorted gate", "overcurrent"]}
@@ -394,7 +413,7 @@ if "probe_serial" not in st.session_state:
 if "probe_connected" not in st.session_state:
     st.session_state.probe_connected = False
 if "image_analysis" not in st.session_state:
-    st.session_state.image_analysis = {}
+    st.session_state.image_analysis = None
 if "probe_readings" not in st.session_state:
     st.session_state.probe_readings = []
 if "diagnosis_result" not in st.session_state:
@@ -423,7 +442,7 @@ if ports:
     selected_port = st.sidebar.selectbox(t["select_port"], options=list(port_options.keys()), format_func=lambda x: port_options[x])
 else:
     selected_port = None
-    st.sidebar.warning("No USB ports detected. Plug in a real Arduino/FTDI device and refresh.")
+    st.sidebar.warning("No USB ports detected. Plug in a real Arduino/FTDI device and refresh, or use manual entry below.")
 
 if st.sidebar.button(t["connect_btn"], disabled=st.session_state.probe_connected):
     if selected_port:
@@ -453,7 +472,7 @@ if st.session_state.probe_connected:
 st.sidebar.markdown("---")
 st.sidebar.info(t["sidebar_instructions"])
 
-# Manual data entry (for users without hardware)
+# Manual data entry
 with st.sidebar.expander(t["manual_add"]):
     manual_chip = st.text_input(t["manual_chip"], key="manual_chip")
     manual_voltage = st.number_input(t["manual_voltage"], value=0.0, step=0.1, key="manual_voltage")
@@ -483,7 +502,7 @@ col1, col2 = st.columns([1, 1])
 
 with col1:
     st.subheader(t["image_upload"])
-    uploaded_image = st.file_uploader(t["upload_label"], type=["jpg", "jpeg", "png"])
+    uploaded_image = st.file_uploader(t["upload_label"], type=["jpg", "jpeg", "png"], key="image_uploader")
     if uploaded_image:
         st.image(uploaded_image, caption="Uploaded circuit", width=300)
         if st.button(t["analyze_btn"]):
@@ -505,13 +524,19 @@ with col2:
 
 # Diagnostic Button
 if st.button(t["diagnostic_btn"]):
-    if not st.session_state.image_analysis and not uploaded_image:
-        st.warning(t["upload_first"])
+    if not st.session_state.probe_readings:
+        st.warning("Please add at least one manual reading or connect a USB probe before running diagnostic.")
     else:
         with st.spinner(t["running_diag"]):
+            # Ensure image analysis exists if image was uploaded
             if uploaded_image and not st.session_state.image_analysis:
                 st.session_state.image_analysis = analyze_circuit_image(uploaded_image)
-            st.session_state.device_type = identify_device(st.session_state.image_analysis, t["lang_code"])
+            # Identify device (from image OR from chip labels in readings)
+            st.session_state.device_type = identify_device(
+                st.session_state.image_analysis,
+                st.session_state.probe_readings,
+                t["lang_code"]
+            )
             result = diagnose_faults(
                 chip_data=DEFAULT_CHIP_DB,
                 probe_readings=st.session_state.probe_readings,
@@ -527,10 +552,10 @@ if st.session_state.diagnosis_result:
     res = st.session_state.diagnosis_result
     st.write(f"**{t['device_type']}:** {st.session_state.device_type}")
     st.write(f"**{t['probe_data_status']}:**")
-    if st.session_state.probe_readings:
+    if st.session_state.probe_connected and len(st.session_state.probe_readings) > 0:
         st.success(t["probe_data_yes"].format(len(st.session_state.probe_readings)))
     else:
-        st.warning(t["probe_data_no"])
+        st.info(t["probe_data_no"])
     st.write(f"**{t['fault_summary']}:** {res.get('fault_summary', 'N/A')}")
     st.write(f"**{t['actions']}:**")
     for act in res.get('actions', []):
