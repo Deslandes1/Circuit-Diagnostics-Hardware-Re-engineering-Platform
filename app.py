@@ -341,6 +341,10 @@ def identify_device(image_analysis, readings, manual_override):
     iphone_chips = ["U3600", "U3301", "U3100", "U5600", "U4701", "U6100"]
     if any(chip in all_labels for chip in iphone_chips):
         return "iPhone 8+ (or similar Apple smartphone)"
+    # Add Samsung tablet detection based on typical chip labels (optional)
+    samsung_chips = ["S2", "S3", "MAX776", "S6", "S7"]
+    if any(chip in all_labels for chip in samsung_chips):
+        return "Samsung Tablet (Galaxy Tab series)"
     generic_chips = ["U1", "U2", "U3", "U4"]
     if any(chip in all_labels for chip in generic_chips):
         return "Generic laptop / desktop motherboard"
@@ -513,7 +517,7 @@ st.sidebar.markdown("---")
 st.sidebar.info(t["sidebar_instructions"])
 
 # Manual device override (applies in both modes)
-device_options = ["Auto-detect", "iPhone 8+", "iPhone X", "Samsung Galaxy", "Laptop", "Desktop"]
+device_options = ["Auto-detect", "iPhone 8+", "iPhone X", "Samsung Tablet", "Samsung Galaxy", "Laptop", "Desktop"]
 st.sidebar.selectbox(t["manual_device_override"], device_options, key="manual_device_override")
 
 st.sidebar.markdown("---")
