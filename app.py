@@ -66,10 +66,10 @@ LANGUAGES = {
         "app_title": "⚡ Circuit Diagnostics & Hardware Re‑engineering",
         "credit": "built by Gesner Deslandes",
         "caption": "Connect a real USB probe (Arduino) OR enable Demo Mode. AI diagnoses faults + helps you build new hardware.",
-        "sidebar_instructions": "**Instructions for REAL hardware**\n1. Build an Arduino probe (see code).\n2. Connect to computer via USB.\n3. Select COM port and click Connect.\n4. Probe sends JSON lines like {\"chip\":\"U3600\",\"voltage\":3.3}\n5. Run diagnostic.",
+        "sidebar_instructions": "**Instructions for REAL hardware**\n1. Build an Arduino probe (see code).\n2. Connect to computer via USB.\n3. Select COM port and click Connect.\n4. Probe sends JSON lines like {\"chip\":\"S2\",\"voltage\":3.3}\n5. Run diagnostic.",
         "demo_mode_label": "🎮 Demo Mode (simulate readings)",
-        "load_demo_btn": "Load Demo iPhone 8+ Readings",
-        "demo_loaded_msg": "Loaded {} demo readings.",
+        "load_demo_btn": "Load Demo Samsung Tablet Readings",
+        "demo_loaded_msg": "Loaded {} demo readings for Samsung Tablet.",
         "usb_title": "🔌 REAL USB Probe (Arduino/FTDI)",
         "select_port": "Select USB Port",
         "connect_btn": "Connect",
@@ -118,10 +118,10 @@ LANGUAGES = {
         "app_title": "⚡ Diagnostic de Circuits & Réingénierie Matérielle",
         "credit": "conçu par Gesner Deslandes",
         "caption": "Connectez une sonde USB réelle (Arduino) OU activez le mode démo. L'IA diagnostique les pannes + aide à construire un nouveau matériel.",
-        "sidebar_instructions": "**Instructions pour matériel réel**\n1. Construisez une sonde Arduino.\n2. Connectez-la par USB.\n3. Sélectionnez le port COM et cliquez Connecter.\n4. La sonde envoie des lignes JSON comme {\"chip\":\"U3600\",\"voltage\":3.3}\n5. Lancez le diagnostic.",
+        "sidebar_instructions": "**Instructions pour matériel réel**\n1. Construisez une sonde Arduino.\n2. Connectez-la par USB.\n3. Sélectionnez le port COM et cliquez Connecter.\n4. La sonde envoie des lignes JSON comme {\"chip\":\"S2\",\"voltage\":3.3}\n5. Lancez le diagnostic.",
         "demo_mode_label": "🎮 Mode Démo (simuler des lectures)",
-        "load_demo_btn": "Charger les lectures démo iPhone 8+",
-        "demo_loaded_msg": "{} lectures démo chargées.",
+        "load_demo_btn": "Charger les lectures démo Samsung Tablet",
+        "demo_loaded_msg": "{} lectures démo pour tablette Samsung chargées.",
         "usb_title": "🔌 Sonde USB RÉELLE (Arduino/FTDI)",
         "select_port": "Sélectionnez le port USB",
         "connect_btn": "Connecter",
@@ -170,10 +170,10 @@ LANGUAGES = {
         "app_title": "⚡ Diagnóstico de Circuitos & Reingeniería de Hardware",
         "credit": "construido por Gesner Deslandes",
         "caption": "Conecte una sonda USB real (Arduino) O active el modo demo. La IA diagnostica fallos + ayuda a construir nuevo hardware.",
-        "sidebar_instructions": "**Instrucciones para hardware real**\n1. Construya una sonda Arduino.\n2. Conéctela por USB.\n3. Seleccione el puerto COM y haga clic en Conectar.\n4. La sonda envía líneas JSON como {\"chip\":\"U3600\",\"voltage\":3.3}\n5. Ejecute el diagnóstico.",
+        "sidebar_instructions": "**Instrucciones para hardware real**\n1. Construya una sonda Arduino.\n2. Conéctela por USB.\n3. Seleccione el puerto COM y haga clic en Conectar.\n4. La sonda envía líneas JSON como {\"chip\":\"S2\",\"voltage\":3.3}\n5. Ejecute el diagnóstico.",
         "demo_mode_label": "🎮 Modo Demo (simular lecturas)",
-        "load_demo_btn": "Cargar lecturas demo iPhone 8+",
-        "demo_loaded_msg": "{} lecturas demo cargadas.",
+        "load_demo_btn": "Cargar lecturas demo Samsung Tablet",
+        "demo_loaded_msg": "{} lecturas demo para tablet Samsung cargadas.",
         "usb_title": "🔌 Sonda USB REAL (Arduino/FTDI)",
         "select_port": "Seleccione el puerto USB",
         "connect_btn": "Conectar",
@@ -222,10 +222,10 @@ LANGUAGES = {
         "app_title": "⚡ Dyagnostik Sikwi & Re-enjenyèri Materyèl",
         "credit": "bati pa Gesner Deslandes",
         "caption": "Konekte yon sond USB reyèl (Arduino) OSWA aktive Mod Demo. AI fè dyagnostik + ede w konstwi nouvo aparèy.",
-        "sidebar_instructions": "**Enstriksyon pou materyèl reyèl**\n1. Konstwi yon sond Arduino.\n2. Konekte li nan òdinatè w atravè USB.\n3. Chwazi pò COM epi klike Konekte.\n4. Sond la voye liy JSON tankou {\"chip\":\"U3600\",\"voltage\":3.3}\n5. Kouri dyagnostik la.",
+        "sidebar_instructions": "**Enstriksyon pou materyèl reyèl**\n1. Konstwi yon sond Arduino.\n2. Konekte li nan òdinatè w atravè USB.\n3. Chwazi pò COM epi klike Konekte.\n4. Sond la voye liy JSON tankou {\"chip\":\"S2\",\"voltage\":3.3}\n5. Kouri dyagnostik la.",
         "demo_mode_label": "🎮 Mod Demo (simile lekti)",
-        "load_demo_btn": "Chaje lekti demo iPhone 8+",
-        "demo_loaded_msg": "{} lekti demo chaje.",
+        "load_demo_btn": "Chaje lekti demo Samsung Tablet",
+        "demo_loaded_msg": "{} lekti demo pou tablèt Samsung chaje.",
         "usb_title": "🔌 Sond USB RÉYÈL (Arduino/FTDI)",
         "select_port": "Chwazi pò USB",
         "connect_btn": "Konekte",
@@ -338,13 +338,13 @@ def identify_device(image_analysis, readings, manual_override):
         return manual_override
     chip_labels = [r.get("chip", "").upper().strip() for r in readings if "chip" in r]
     all_labels = " ".join(chip_labels)
+    # Samsung tablet chip labels (common)
+    samsung_chips = ["S2", "S3", "S4", "S5", "MAX776", "S6", "S7", "S8", "S9"]
+    if any(chip in all_labels for chip in samsung_chips):
+        return "Samsung Tablet (Galaxy Tab series)"
     iphone_chips = ["U3600", "U3301", "U3100", "U5600", "U4701", "U6100"]
     if any(chip in all_labels for chip in iphone_chips):
         return "iPhone 8+ (or similar Apple smartphone)"
-    # Add Samsung tablet detection based on typical chip labels (optional)
-    samsung_chips = ["S2", "S3", "MAX776", "S6", "S7"]
-    if any(chip in all_labels for chip in samsung_chips):
-        return "Samsung Tablet (Galaxy Tab series)"
     generic_chips = ["U1", "U2", "U3", "U4"]
     if any(chip in all_labels for chip in generic_chips):
         return "Generic laptop / desktop motherboard"
@@ -406,6 +406,12 @@ Suggest which chips can be reused, new components, wiring, and firmware.
 
 # ================== Chip Database ==================
 CHIP_DB = {
+    # Samsung tablet chips
+    "S2": {"type": "PMIC (Power Management)", "expected": {"VBATT": 3.8, "VDD_MAIN": 3.8}},
+    "S3": {"type": "NAND Flash", "expected": {"VDD_NAND": 1.8}},
+    "S4": {"type": "Exynos CPU", "expected": {"VCC_MAIN": 3.8}},
+    "S5": {"type": "USB/Charging IC", "expected": {"V_BUS": 5.0, "VBATT": 3.8}},
+    # iPhone fallback
     "U3600": {"type": "PMIC (Power Management)", "expected": {"VBATT": 3.8, "VDD_MAIN": 3.8}},
     "U3301": {"type": "NAND Flash", "expected": {"VDD_NAND": 1.8}},
     "U3100": {"type": "A11 Bionic CPU", "expected": {"VCC_MAIN": 3.8}},
@@ -413,12 +419,12 @@ CHIP_DB = {
     "U1": {"type": "Voltage Regulator", "expected": {"out": 5.0}},
 }
 
-# ================== Demo Readings ==================
+# ================== Demo Readings for Samsung Tablet ==================
 DEMO_READINGS = [
-    {"chip": "U3600", "voltage": 3.8, "expected": 3.8},
-    {"chip": "U3301", "voltage": 0.0, "expected": 1.8},
-    {"chip": "U3100", "voltage": 0.5, "expected": 3.8},
-    {"chip": "U5600", "voltage": 5.0, "expected": 5.0},
+    {"chip": "S2", "voltage": 3.8, "expected": 3.8},
+    {"chip": "S3", "voltage": 0.0, "expected": 1.8},
+    {"chip": "S4", "voltage": 0.5, "expected": 3.8},
+    {"chip": "S5", "voltage": 5.0, "expected": 5.0},
 ]
 
 # ================== Session State ==================
@@ -464,7 +470,6 @@ demo_toggle = st.sidebar.checkbox(t["demo_mode_label"], value=st.session_state.d
 if demo_toggle != st.session_state.demo_mode:
     st.session_state.demo_mode = demo_toggle
     if st.session_state.demo_mode:
-        # Clear real probe connection if any
         if st.session_state.probe_serial:
             st.session_state.probe_serial.close()
         st.session_state.probe_connected = False
@@ -472,7 +477,6 @@ if demo_toggle != st.session_state.demo_mode:
     st.rerun()
 
 if not st.session_state.demo_mode:
-    # Real hardware mode
     st.sidebar.title(t["usb_title"])
     ports = list_usb_ports()
     if ports:
@@ -506,7 +510,6 @@ if not st.session_state.demo_mode:
         else:
             st.sidebar.warning("⏳ Waiting for data from Arduino...")
 else:
-    # Demo mode
     st.sidebar.info("🎮 **Demo Mode Active** – No hardware needed.")
     if st.sidebar.button(t["load_demo_btn"]):
         st.session_state.readings = DEMO_READINGS.copy()
@@ -516,7 +519,6 @@ else:
 st.sidebar.markdown("---")
 st.sidebar.info(t["sidebar_instructions"])
 
-# Manual device override (applies in both modes)
 device_options = ["Auto-detect", "iPhone 8+", "iPhone X", "Samsung Tablet", "Samsung Galaxy", "Laptop", "Desktop"]
 st.sidebar.selectbox(t["manual_device_override"], device_options, key="manual_device_override")
 
@@ -552,7 +554,6 @@ with col2:
     else:
         st.info(t["no_data"])
 
-# Diagnostic Button
 if st.button(t["diagnostic_btn"]):
     if not st.session_state.readings:
         st.warning("Please add readings (load demo or connect a real probe).")
@@ -592,7 +593,6 @@ if st.session_state.diagnosis_result:
         st.markdown(f"- **{act.get('chip')}** : {act.get('fault')} → {act.get('action')} ({act.get('reason')})")
     st.write(f"**{t['recommended_tools']}:** {', '.join(res.get('recommended_tools', []))}")
 
-# Redesign Chatbot
 st.markdown("---")
 st.subheader(t["build_title"])
 st.write(t["build_desc"])
